@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AURA_DB</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <script src="/script.js"></script>
+    <script src="/jszip.min.js"></script>
+  </head>
+  <body class="noscroll">
+    <main class="container">
+      <aside>
+        <div class="sidenav noscroll">
+          <div
+            style="width: fit-content; margin-left: auto"
+            class="cross-svg"
+            onclick="togglesidenav()"
+          >
+            <svg
+              fill="#fff"
+              width="1.5rem"
+              version="1.1"
+              id="Capa_1"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 490 490"
+              xml:space="preserve"
+            >
+              <polygon
+                points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 
+	489.292,457.678 277.331,245.004 489.292,32.337 "
+              />
+            </svg>
+          </div>
+          <h2>Folders</h2>
+          <div class="sidenav-search">
+            <input type="text" placeholder="Search for folders" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              style="min-width: 1.75rem; width: 2rem"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                stroke="#03B2FD"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div class="folder-list noscroll">
+            <div class="sidefolder hidden">
+              <svg
+                width="2rem"
+                viewBox="0 0 68 55"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 0H29.6925L35.2544 8.92263H67.0168L68 54H0V0Z"
+                  fill="#e1e817"
+                />
+              </svg>
+              <div style="padding-bottom: 4px" class="foldercontent">
+                <span style="font-size: 1rem" class="foldername">astra</span>
+                <div style="font-size: 0.75rem" class="folderdetail">
+                  <span class="noofitem">11 items</span>
+                  <span class="totalsize">11GB</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <div class="main-content noscroll">
+        <div class="upload">
+          <!-- <form
+            method="POST"
+            id="uploadForm"
+            class="hidden"
+            action="/handleupload"
+            enctype="multipart/form-data"
+          >
+            <input
+              type="file"
+              id="fileholder"
+              name="filename"
+              onchange="document
+              .getElementById('uploadForm').submit()"
+            /><br /><br />
+          </form> -->
+          <form
+            id="uploadForm"
+            action="/handleupload"
+            method="POST"
+            class="hidden"
+            enctype="multipart/form-data"
+          >
+            <input
+              type="file"
+              id="fileholder"
+              name="file"
+              onchange="document
+              .getElementById('uploadButton').click()"
+            />
+            <button type="submit" id="uploadButton">Upload and Compress</button>
+          </form>
+          <div
+            class="addbtn"
+            onclick="document.getElementById('fileholder').click()"
+          >
+            <svg
+              width="2rem"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="6 6 12 12"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M11.25 12.75V18H12.75V12.75H18V11.25H12.75V6H11.25V11.25H6V12.75H11.25Z"
+                fill="#fff"
+              ></path>
+            </svg>
+          </div>
+          <script>
+            document
+              .getElementById("uploadForm")
+              .addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const uploadform = document.getElementById("uploadForm");
+                const fileInput = document.getElementById("fileholder");
+                const file = fileInput.files[0];
+
+                if (!file) {
+                  alert("Please select a file to upload.");
+                  return;
+                }
+
+                const zip = new JSZip();
+                zip.file(file.name, file, {
+                  compression: "DEFLATE",
+                  compressionOptions: { level: 9 },
+                });
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const formData = new FormData();
+
+                formData.append("file", zipBlob, file.name.split(".")[0]);
+                const date = new Date().toISOString();
+                console.log(date);
+                const jsonData = {
+                  date: date,
+                  path: file.name,
+                  extension: file.name.split(".").pop(),
+                };
+
+                formData.append(
+                  "metadata",
+                  new Blob([JSON.stringify(jsonData)], {
+                    type: "application/json",
+                  }),
+                  "file_data.json"
+                );
+
+                fetch("/handleupload", {
+                  method: "POST",
+                  body: formData,
+                })
+                  .then((response) => {
+                    if (!response.ok) {
+                      throw new Error("Network response was not ok");
+                    }
+                    show_file_in_dir("/");
+                    console.log("sds");
+                  })
+                  .catch((error) => {
+                    console.error(
+                      "There was a problem with the fetch operation:",
+                      error
+                    );
+                  });
+              });
+          </script>
+        </div>
+        <div class="filepath">
+          <div class="hamburger" onclick="togglesidenav()">
+            <svg
+              fill="#fff"
+              width="1.75rem"
+              viewBox="0 0 1920 1920"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1920 1411.412v225.882H0v-225.882h1920Zm0-564.706v225.882H0V846.706h1920ZM1920 282v225.882H0V282h1920Z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="path">
+            <div class="home">
+              <div>
+                <span> Home </span>
+              </div>
+            </div>
+            <div class="filepathpart hidden">
+              <svg
+                fill="#fff"
+                width="2.25rem"
+                viewBox="-192 -192 2304.00 2304.00"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke="#CCCCCC"
+                  stroke-width="3.84"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M568.13.012 392 176.142l783.864 783.989L392 1743.87 568.13 1920l960.118-959.87z"
+                    fill-rule="evenodd"
+                  ></path>
+                </g>
+              </svg>
+              <div class="file-location">
+                <span></span>
+              </div>
+            </div>
+          </div>
+          <div class="profile">
+            <div class="text">
+              <div class="name">Mr Stark</div>
+              <div>
+                <span class="role">Admin</span>
+                <span class="time"> 00:11:11 </span>
+              </div>
+            </div>
+            <div class="profile-pic">
+              <img
+                alt="Profile picture of a man in a suit with a stylized background"
+                width="60"
+                height="60"
+                style="object-fit: cover; object-position: top"
+                src="test.bmp"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="search-bar">
+          <div class="openfolder">
+            <svg
+              fill="#fff"
+              class="back"
+              width="1.75rem"
+              viewBox="-192 -192 2304.00 2304.00"
+              xmlns="http://www.w3.org/2000/svg"
+              transform="matrix(-1, 0, 0, 1, 0, 0)"
+            >
+              <path
+                d="M568.13.012 392 176.142l783.864 783.989L392 1743.87 568.13 1920l960.118-959.87z"
+                fill-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="currentopenedfolder">Home</span>
+          </div>
+          <script>
+            document
+              .querySelector(".back")
+              .addEventListener("click", (event) => {
+                event.stopPropagation();
+                let finalpath = "";
+                const elements = document.querySelectorAll(".filepathpart");
+                for (let i = 0; i < elements.length - 1; i++) {
+                  finalpath += elements[i].children[1].textContent.replace(
+                    /\s/g,
+                    ""
+                  );
+                  if (i == elements.length - 2) {
+                    break;
+                  }
+                  finalpath += "/";
+                }
+                if (finalpath.length == 0) {
+                  finalpath = "/";
+                }
+                show_file_in_dir(finalpath);
+                if (document.querySelector(".path").children.length > 2) {
+                  document
+                    .querySelector(".path")
+                    .removeChild(document.querySelector(".path").lastChild);
+                }
+                document.querySelector(".currentopenedfolder").textContent =
+                  document.querySelector(".path").children.length == 2
+                    ? "Home"
+                    : fullFolderPath.replace(/.*\//, "");
+              });
+          </script>
+          <div
+            class="search-and-sort"
+            style="display: flex; column-gap: 1rem; width: max-content"
+          >
+            <div class="searchbox">
+              <input type="text" placeholder="Search for folders" />
+              <svg
+                width="1.8rem"
+                viewBox="0 0 24 24"
+                fill="none"
+                style="margin-right: 0.5rem"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                  stroke="#03B2FD"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="dropdown">
+              <button>
+                <svg
+                  viewBox="0 0 24 24"
+                  width="2rem"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M22.75 7C22.75 7.41421 22.4142 7.75 22 7.75L2 7.75C1.58579 7.75 1.25 7.41421 1.25 7C1.25 6.58579 1.58579 6.25 2 6.25L22 6.25C22.4142 6.25 22.75 6.58579 22.75 7Z"
+                    fill="#ffffff"
+                  ></path>
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M19.75 12C19.75 12.4142 19.4142 12.75 19 12.75L5 12.75C4.58579 12.75 4.25 12.4142 4.25 12C4.25 11.5858 4.58579 11.25 5 11.25L19 11.25C19.4142 11.25 19.75 11.5858 19.75 12Z"
+                    fill="#ffffff"
+                  ></path>
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M16.75 17C16.75 17.4142 16.4142 17.75 16 17.75H8C7.58579 17.75 7.25 17.4142 7.25 17C7.25 16.5858 7.58579 16.25 8 16.25H16C16.4142 16.25 16.75 16.5858 16.75 17Z"
+                    fill="#ffffff"
+                  ></path>
+                </svg>
+              </button>
+              <div class="dropdown-content">
+                <span class="onbases" onclick="sortItems(this)">Size</span>
+                <span class="onbases" onclick="sortItems(this)">Date</span>
+                <span class="onbases" onclick="sortItems(this)">File Type</span>
+                <span
+                  style="
+                    color: #9494a4;
+                    font-weight: bolder;
+                    padding: 0.3rem 1rem;
+                  "
+                  >Order</span
+                >
+                <span class="order active" onclick="sortItems(this)"
+                  >High to Low</span
+                >
+                <span class="order" onclick="sortItems(this)">Low to High</span>
+              </div>
+            </div>
+
+            <script>
+              document
+                .querySelector(".dropdown button")
+                .addEventListener("click", (event) => {
+                  event.stopPropagation();
+                  const dropdownContent =
+                    document.querySelector(".dropdown-content");
+                  dropdownContent.style.display =
+                    dropdownContent.style.display === "flex" ? "none" : "flex";
+                });
+
+              document.addEventListener("click", (event) => {
+                const dropdownContent =
+                  document.querySelector(".dropdown-content");
+                if (!event.target.closest(".dropdown")) {
+                  dropdownContent.style.display = "none";
+                }
+              });
+            </script>
+          </div>
+        </div>
+
+        <div class="item-container noscroll">
+          <div
+            class="card"
+            data-filename="Cab.pdf"
+            data-size="1GB"
+            data-type="b"
+            data-date="09-09-2024"
+          >
+            <div style="grid-column: 1" class="fileid">
+              <div class="icon">
+                <svg
+                  height="800px"
+                  width="800px"
+                  viewBox="0 0 164 218"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M164 62.5418H119.194C108.951 62.5418 100.304 64.0743 100.65 55.2365V0L164 62.5418Z"
+                    fill="white"
+                  />
+                  <path
+                    d="M18.964 0C0 -4.20338e-10 0 8.38089 0 18.7214V199.279C5.45356e-10 218 8.48953 218 18.964 218H145.036C155.51 218 164 218 164 199.279V62.5418H119.194C108.951 62.5418 100.304 64.0743 100.65 55.2365V0H18.964Z"
+                    fill="white"
+                  />
+                  <path
+                    d="M19 37L88.012 37M19 56.014H88.012M19 75.8083H142M19 96.6668H142M19 117H142"
+                    stroke="#979796"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M19 136H142"
+                    stroke="#979796"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M19 155H142"
+                    stroke="#979796"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M19 174H142"
+                    stroke="#979796"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M19 193H142"
+                    stroke="#979796"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M101 57V0L164 62H106.5H104.5H103.5L102 61L101 59.5V57Z"
+                    fill="#C6C4C4"
+                  />
+                </svg>
+              </div>
+              <span class="filename noscroll">Cab.b</span>
+            </div>
+            <span
+              style="grid-column: 2; width: max-content; padding: 0 1rem"
+              class="dateofmodi"
+              >09-09-2024 00:00</span
+            >
+            <span style="grid-column: 3" class="filetype">exten File</span>
+            <span style="grid-column: 4" class="size">1GB</span>
+            <div style="grid-column: 5" class="download">
+              <div class="icon download-icon">
+                <div class="loader"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M20.7294 10.9828L17.5535 9.39432L18.4482 7.60559L22.4468 9.60562C22.9119 9.83823 23.1211 10.3885 22.928 10.8713L18.9293 20.8712C18.7775 21.251 18.4098 21.5 18.0008 21.5L6.00082 21.5C5.59188 21.5 5.22414 21.251 5.0723 20.8712L1.07362 10.8713C0.880554 10.3885 1.08974 9.83823 1.5548 9.60562L5.55348 7.60559L6.44816 9.39432L3.2722 10.9828L6.67794 19.5L17.3237 19.5L20.7294 10.9828Z"
+                    fill="#ffffff"
+                  ></path>
+                  <path
+                    class="arrow"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M13.0001 2.5L13.0001 11.0857L14.293 9.7927L15.7072 11.2069L12.0001 14.9143L8.29297 11.2069L9.70723 9.7927L11.0001 11.0857L11.0001 2.5H13.0001Z"
+                    fill="#ffffff"
+                  ></path>
+                </svg>
+
+                <div class="progress-bar"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card folder">
+            <div style="grid-column: 1" class="fileid">
+              <div class="icon">
+                <svg
+                  style="width: 2.8rem; max-width: 4rem; height: 2.75rem"
+                  viewBox="0 0 68 55"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0H29.6925L35.2544 8.92263H67.0168L68 54H0V0Z"
+                    fill="#00f714"
+                  />
+                </svg>
+              </div>
+              <span class="filename noscroll"
+                >trwrefdsdsdsddddddddddddsddfadfdfdf</span
+              >
+            </div>
+            <span
+              style="grid-column: 2; width: max-content; padding: 0 1rem"
+              class="dateofmodi"
+              >09-09-2024 00:00</span
+            >
+            <span style="grid-column: 3" class="filetype">File</span>
+          </div>
+        </div>
+      </div>
+      <script>
+        var isAscending = false;
+        function sortItems(element) {
+          const container = document.querySelector(".item-container");
+          const items = Array.from(container.children);
+          var onbases = document.querySelectorAll(".onbases");
+          var order = document.querySelectorAll(".order");
+
+          if (element.classList.contains("onbases")) {
+            const activeOrder = Array.from(order).find((ord) =>
+              ord.classList.contains("active")
+            );
+            if (!activeOrder) return;
+          }
+
+          if (
+            element.classList.contains("order") &&
+            element.textContent.trim() == "Low to High"
+          ) {
+            isAscending = true;
+          } else if (
+            element.classList.contains("order") &&
+            element.textContent.trim() == "High to Low"
+          ) {
+            isAscending = false;
+          }
+          // set active
+          if (element.classList.contains("onbases")) {
+            onbases.forEach((onbases) => onbases.classList.remove("active"));
+          } else {
+            order.forEach((order) => order.classList.remove("active"));
+          }
+          element.classList.add("active");
+
+          const activeOnbases = Array.from(onbases).find((onbase) =>
+            onbase.classList.contains("active")
+          );
+
+          items.sort((a, b) => {
+            let comparison = 0;
+            switch (activeOnbases.textContent) {
+              case "Date":
+                const dateA = parseDate(a.dataset.date);
+                const dateB = parseDate(b.dataset.date);
+                comparison = dateA - dateB;
+                break;
+              case "Size":
+                const sizeA = parseInt(a.dataset.size) || 0;
+                const sizeB = parseInt(b.dataset.size) || 0;
+                comparison = sizeA - sizeB;
+                break;
+              case "File Type":
+                comparison = -a.dataset.type.localeCompare(b.dataset.type);
+                break;
+              default:
+                break;
+            }
+            return comparison;
+          });
+
+          if (!isAscending) {
+            items.reverse();
+          }
+          items.forEach((item) => container.appendChild(item));
+        }
+
+        function parseDate(dateString) {
+          const [day, month, year] = dateString.split("-").map(Number);
+          return new Date(year, month - 1, day);
+        }
+      </script>
+    </main>
+    <script>
+      function togglesidenav() {
+        const sidenav = document.querySelector("aside");
+        const hamburger = document.querySelector(".hamburger");
+        const crossSvg = document.querySelector(".cross-svg");
+
+        sidenav.classList.toggle("open");
+      }
+    </script>
+  </body>
+</html>
