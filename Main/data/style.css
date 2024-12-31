@@ -298,23 +298,24 @@ aside.open {
 
 .card {
   display: grid;
-  grid-template-columns: 2.8rem 50% auto auto min-content min-content;
+  grid-template-columns: 2.8rem 45% max-content auto min-content min-content;
   flex-shrink: 0;
   height: fit-content;
   justify-items: start;
   align-items: center;
   padding: 0.5rem;
-  column-gap: 1.5rem;
+  column-gap: 1.75rem;
   box-sizing: border-box;
   transition: width 0.3s;
   overflow: hidden;
 }
 .folder {
-  grid-template-columns: min-content 50% max-content min-content;
+  grid-template-columns: min-content 45% max-content min-content;
 }
 .card span {
   line-height: 100%;
   align-self: center;
+  min-width: max-content;
 }
 .icon {
   display: flex;
@@ -354,7 +355,6 @@ aside.open {
   grid-column: 3;
   width: max-content;
   justify-self: center;
-  padding: 0 1.26rem;
   align-self: center;
   min-width: 2rem;
   justify-self: end; /* Prevent button from shrinking */

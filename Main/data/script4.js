@@ -70,13 +70,13 @@ function show_file_in_dir(dir) {
         var sidemenufolder = document.querySelector(".sidefolder");
         var newsidemenufolder = sidemenufolder.cloneNode(true);
         newsidemenufolder.classList.remove("hidden");
-        newsidemenufolder.children[1].children[0].textContent = obj[dir][i][
-          "folder"
-        ].replace(/.*\//, "");
+        newsidemenufolder.querySelector(".foldername").textContent = obj[dir][
+          i
+        ]["folder"].replace(/.*\//, "");
         document.querySelector(".folder-list").appendChild(newsidemenufolder);
       }
       newfilepathpart.classList.remove("hidden");
-      newfolder.children[0].children[1].textContent = obj[dir][i][
+      newfolder.querySelector(".filename").textContent = obj[dir][i][
         "folder"
       ].replace(/.*\//, "");
       newfolder.addEventListener("click", function (event) {
@@ -84,7 +84,6 @@ function show_file_in_dir(dir) {
         const fullFolderPath = obj[dir][i]["folder"].trim();
         console.log(fullFolderPath);
         show_file_in_dir(fullFolderPath + "/");
-        console.log(newfilepathpart.children[1].children[0]);
         if (fullFolderPath.replace(/.*\//, "").length > 1) {
           newfilepathpart.children[1].children[0].textContent =
             fullFolderPath.replace(/.*\//, "");
@@ -98,13 +97,15 @@ function show_file_in_dir(dir) {
     } else {
       newitem.classList.remove("hidden");
       newitem.querySelector(".filename").textContent = obj[dir][i]["filename"];
-      const textContent = newitem.children[0].children[1].textContent;
       newitem.querySelector(".size").textContent = file_size_conversion(i, dir);
 
       // Extract the file extension
       newitem.querySelector(".dateofmodi").textContent =
         obj[dir][i]["modified_date"];
-      var fileExtension = textContent.split(".").pop();
+      var fileExtension = newitem
+        .querySelector(".filename")
+        .textContent.split(".")
+        .pop();
       newitem.querySelector(".filetype").textContent = fileExtension + " File";
 
       const iconDiv = newitem.querySelector(".icon");
