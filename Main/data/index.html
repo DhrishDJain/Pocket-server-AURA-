@@ -7,7 +7,7 @@
     <title>AURA_DB</title>
 
     <link rel="stylesheet" href="style.css" />
-    <script src="/script4.js"></script>
+    <script src="/script1.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -135,7 +135,7 @@
                 const zipBlob = await zip.generateAsync({ type: "blob" });
                 const formData = new FormData();
 
-                formData.append("file", zipBlob, file.name.split(".")[0]);
+                formData.append("file", zipBlob, file.name.split(".")[0]+"#"+ file.name.split(".").pop()+"#");
                 const date = new Date().toISOString();
                 console.log(date);
                 const jsonData = {
@@ -440,7 +440,7 @@
               </svg>
             </div>
             <span
-              style="grid-column: 2; width: max-content"
+              style="grid-column: 2; min-width: 95%;"
               class="filename noscroll"
               >Cab.b</span
             >

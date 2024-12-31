@@ -86,7 +86,25 @@ void buildJson(const String &path, JsonDocument &jsonDoc) {
         JsonObject fileInfo = array.createNestedObject();
         fileInfo["filename"] = fileName;
         fileInfo["size"] = file.size();
-        fileInfo["extension"] = fileName.substring(fileName.lastIndexOf('.')+1);
+        String extension = "";
+        int lastDotIndex = fileName.lastIndexOf('.');
+        int lastUnderscoreIndex = fileName.lastIndexOf('#');
+
+        if (lastDotIndex != -1) {
+          extension = fileName.substring(lastDotIndex + 1);
+        }
+
+        if (extension != "zip") {
+          fileInfo["extension"] = extension;
+        } else {
+          int secondLastUnderscoreIndex = (lastUnderscoreIndex != -1) ? fileName.lastIndexOf('#', lastUnderscoreIndex - 1) : -1;
+
+          if (lastUnderscoreIndex != -1 && secondLastUnderscoreIndex != -1) {
+            fileInfo["extension"] = fileName.substring(secondLastUnderscoreIndex + 1, lastUnderscoreIndex);
+          } else {
+            fileInfo["extension"] = extension;
+          }
+        }
         fafile.close();
         if (!fafile.open(file.path(), O_READ)) {
           error("open default.txt failed");

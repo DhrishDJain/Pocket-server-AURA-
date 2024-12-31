@@ -4,7 +4,7 @@ var dir = [];
 let icon = {};
 const fetchIcons = async () => {
   try {
-    const response = await fetch("file_icons.json");
+    const response = await fetch("icons.json");
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -15,7 +15,6 @@ const fetchIcons = async () => {
   }
 };
 fetchIcons();
-console.log(icon);
 window.addEventListener("load", files_in_storeage);
 
 function files_in_storeage(event) {
@@ -82,7 +81,6 @@ function show_file_in_dir(dir) {
       newfolder.addEventListener("click", function (event) {
         event.stopPropagation();
         const fullFolderPath = obj[dir][i]["folder"].trim();
-        console.log(fullFolderPath);
         show_file_in_dir(fullFolderPath + "/");
         if (fullFolderPath.replace(/.*\//, "").length > 1) {
           newfilepathpart.children[1].children[0].textContent =
@@ -96,24 +94,23 @@ function show_file_in_dir(dir) {
       document.querySelector(".item-container").appendChild(newfolder);
     } else {
       newitem.classList.remove("hidden");
-      newitem.querySelector(".filename").textContent = obj[dir][i]["filename"];
+      var fileExtension = obj[dir][i]["extension"];
+      const filename = obj[dir][i]["filename"];
+      newitem.querySelector(".filename").textContent = filename.includes("#")
+        ? `${filename.split("#")[0]}.${fileExtension}`
+        : filename;
       newitem.querySelector(".size").textContent = file_size_conversion(i, dir);
 
       // Extract the file extension
       newitem.querySelector(".dateofmodi").textContent =
         obj[dir][i]["modified_date"];
-      var fileExtension = newitem
-        .querySelector(".filename")
-        .textContent.split(".")
-        .pop();
-      newitem.querySelector(".filetype").textContent = fileExtension + " File";
-
       const iconDiv = newitem.querySelector(".icon");
       // Insert the SVG content into the div
 
       if (icon[fileExtension] != undefined) {
         iconDiv.innerHTML = icon[fileExtension];
       }
+      newitem.querySelector(".filetype").textContent = fileExtension + " File";
 
       document.querySelector(".item-container").appendChild(newitem);
     }
