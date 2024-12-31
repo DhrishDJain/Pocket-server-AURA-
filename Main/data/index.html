@@ -6,7 +6,7 @@
 
     <title>AURA_DB</title>
 
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style2.css" />
     <script src="/script.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
@@ -79,21 +79,6 @@
       </aside>
       <div class="main-content noscroll">
         <div class="upload">
-          <!-- <form
-            method="POST"
-            id="uploadForm"
-            class="hidden"
-            action="/handleupload"
-            enctype="multipart/form-data"
-          >
-            <input
-              type="file"
-              id="fileholder"
-              name="filename"
-              onchange="document
-              .getElementById('uploadForm').submit()"
-            /><br /><br />
-          </form> -->
           <form
             id="uploadForm"
             action="/handleupload"
@@ -401,69 +386,75 @@
             data-type="b"
             data-date="09-09-2024"
           >
-            <div style="grid-column: 1" class="fileid">
-              <div class="icon">
-                <svg
-                  height="800px"
-                  width="800px"
-                  viewBox="0 0 164 218"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M164 62.5418H119.194C108.951 62.5418 100.304 64.0743 100.65 55.2365V0L164 62.5418Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M18.964 0C0 -4.20338e-10 0 8.38089 0 18.7214V199.279C5.45356e-10 218 8.48953 218 18.964 218H145.036C155.51 218 164 218 164 199.279V62.5418H119.194C108.951 62.5418 100.304 64.0743 100.65 55.2365V0H18.964Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M19 37L88.012 37M19 56.014H88.012M19 75.8083H142M19 96.6668H142M19 117H142"
-                    stroke="#979796"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                  <path
-                    d="M19 136H142"
-                    stroke="#979796"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                  <path
-                    d="M19 155H142"
-                    stroke="#979796"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                  <path
-                    d="M19 174H142"
-                    stroke="#979796"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                  <path
-                    d="M19 193H142"
-                    stroke="#979796"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                  <path
-                    d="M101 57V0L164 62H106.5H104.5H103.5L102 61L101 59.5V57Z"
-                    fill="#C6C4C4"
-                  />
-                </svg>
-              </div>
-              <span class="filename noscroll">Cab.b</span>
+            <!-- <div style="grid-column: 1" class="fileid"> -->
+            <div style="margin: 0 auto;" class="icon">
+              <svg
+                height="800px"
+                width="800px"
+                viewBox="0 0 164 218"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M164 62.5418H119.194C108.951 62.5418 100.304 64.0743 100.65 55.2365V0L164 62.5418Z"
+                  fill="white"
+                />
+                <path
+                  d="M18.964 0C0 -4.20338e-10 0 8.38089 0 18.7214V199.279C5.45356e-10 218 8.48953 218 18.964 218H145.036C155.51 218 164 218 164 199.279V62.5418H119.194C108.951 62.5418 100.304 64.0743 100.65 55.2365V0H18.964Z"
+                  fill="white"
+                />
+                <path
+                  d="M19 37L88.012 37M19 56.014H88.012M19 75.8083H142M19 96.6668H142M19 117H142"
+                  stroke="#979796"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M19 136H142"
+                  stroke="#979796"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M19 155H142"
+                  stroke="#979796"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M19 174H142"
+                  stroke="#979796"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M19 193H142"
+                  stroke="#979796"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M101 57V0L164 62H106.5H104.5H103.5L102 61L101 59.5V57Z"
+                  fill="#C6C4C4"
+                />
+              </svg>
             </div>
             <span
-              style="grid-column: 2; width: max-content; padding: 0 1rem"
-              class="dateofmodi"
+              style="grid-column: 2; width: max-content"
+              class="filename noscroll"
+              >Cab.b</span
+            >
+            <span class="dateofmodi"
               >09-09-2024 00:00</span
             >
-            <span style="grid-column: 3" class="filetype">exten File</span>
-            <span style="grid-column: 4" class="size">1GB</span>
-            <div style="grid-column: 5" class="download">
+            <!-- </div> -->
+            <span style="grid-column: 4" class="filetype">exten File</span>
+            <span
+              style="grid-column: 5; justify-self: end; padding-right: 0.5rem"
+              class="size"
+              >1GB</span
+            >
+            <div style="grid-column: 6" class="download">
               <div class="icon download-icon">
                 <div class="loader"></div>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -487,30 +478,28 @@
             </div>
           </div>
           <div class="card folder">
-            <div style="grid-column: 1" class="fileid">
-              <div class="icon">
-                <svg
-                  style="width: 2.8rem; max-width: 4rem; height: 2.75rem"
-                  viewBox="0 0 68 55"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M0 0H29.6925L35.2544 8.92263H67.0168L68 54H0V0Z"
-                    fill="#00f714"
-                  />
-                </svg>
-              </div>
-              <span class="filename noscroll"
-                >trwrefdsdsdsddddddddddddsddfadfdfdf</span
+            <div style="grid-column: 1;" class="icon">
+              <svg
+                style="width: 2.8rem; max-width: 4rem; height: 2.75rem"
+                viewBox="0 0 68 55"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M0 0H29.6925L35.2544 8.92263H67.0168L68 54H0V0Z"
+                  fill="#00f714"
+                />
+              </svg>
             </div>
             <span
-              style="grid-column: 2; width: max-content; padding: 0 1rem"
-              class="dateofmodi"
+              style="grid-column: 2; "
+              class="filename noscroll"
+              >trwrefdsdsdsddddddddddddsddfadfdfdf</span
+            >
+            <span style="padding-right: 1.75rem;" class="dateofmodi"
               >09-09-2024 00:00</span
             >
-            <span style="grid-column: 3" class="filetype">File</span>
+            <span style="grid-column: 4" class="filetype">Folder</span>
           </div>
         </div>
       </div>
