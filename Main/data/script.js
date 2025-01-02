@@ -1,53 +1,79 @@
 var connction = new WebSocket("ws://" + location.hostname + ":81/");
-var obj;
+let obj = {}; // Ensure obj is initialized
 var dir = [];
 let icon = {};
-const fetchIcons = async () => {
-  try {
-    const response = await fetch("icons.json");
+
+connction.onopen = () => {
+  console.log("WebSocket connection established");
+  connction.send(
+    JSON.stringify({
+      path: "/",
+    })
+  );
+};
+// window.addEventListener("load", files_in_storeage);
+fetch("/file_icons.json")
+  .then((response) => {
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    icon = await response.json();
-    return icon;
-  } catch (error) {
+    return response.json();
+  })
+  .then((data) => {
+    icon = data;
+  })
+  .catch((error) => {
     console.error("There was a problem with the fetch operation:", error);
-  }
-};
-fetchIcons();
-window.addEventListener("load", files_in_storeage);
+  });
 
-function files_in_storeage(event) {
-  connction.onmessage = files_in_storeage;
-  if (event.data == "DONE") {
-    show_on_web();
-    return;
-  }
+// function files_in_storeage() {}
+connction.onmessage = (event) => {
   if (event.data == " " || event.data == undefined) {
+    console.log("Received an empty or undefined data");
     return;
   }
-  obj = JSON.parse(event.data);
-  console.log(obj)
-  obj["/"].shift();
-  delete obj["/System Volume Information"];
-}
-function show_on_web() {
+
+  const tempobj = JSON.parse(event.data);
+  console.log("Received data from WebSocket:", tempobj);
+
+  // Check if the first key is "/"
+  const firstKey = Object.keys(tempobj)[0];
+  console.log("first_key", firstKey);
+  if (firstKey === "/") {
+    // Update the entire object
+    obj = tempobj;
+    list_dir_in_json();
+  } else {
+    const dirName = firstKey;
+    const fileData = tempobj[firstKey];
+
+    // Check if fileData is defined before assigning
+    if (fileData !== undefined) {
+      obj[dirName] = fileData;
+    } else {
+      console.warn(`No existing data for key: ${firstKey}`);
+    }
+    show_file_in_dir(firstKey);
+  }
+  console.log("Updated object:", obj);
+};
+function list_dir_in_json() {
   for (var x in obj) {
     dir.push(x);
   }
-  show_file_in_dir("/");
-  window.addEventListener("popstate", function () {
-    const url = new URL(window.location.href);
-    if (url.pathname.includes(" ")) {
-      // Clear all added URLs
-      window.history.replaceState({}, "", "/");
-      // Optionally, you can clear the folder contents here if needed
-      show_file_in_dir(["/"]);
-    } else {
-      // Load the folder contents based on the current URL
-      show_file_in_dir([url.pathname]);
-    }
-  });
+  show_file_in_dir(dir[0]);
+  // window.addEventListener("popstate", function () {
+  //   const url = new URL(window.location.href);
+  //   if (url.pathname.includes(" ")) {
+  //     // Clear all added URLs
+  //     window.history.replaceState({}, "", "/");
+  //     // Optionally, you can clear the folder contents here if needed
+  //     show_file_in_dir(["/"]);
+  //   } else {
+  //     // Load the folder contents based on the current URL
+  //     show_file_in_dir([url.pathname]);
+  //   }
+  // });
 }
 function show_file_in_dir(dir) {
   var item = document.querySelector(".card");
@@ -106,8 +132,6 @@ function show_file_in_dir(dir) {
       newitem.querySelector(".dateofmodi").textContent =
         obj[dir][i]["modified_date"];
       const iconDiv = newitem.querySelector(".icon");
-      // Insert the SVG content into the div
-
       if (icon[fileExtension] != undefined) {
         iconDiv.innerHTML = icon[fileExtension];
       }
@@ -177,14 +201,11 @@ function show_file_in_dir(dir) {
 }
 function file_size_conversion(i, dir) {
   let bytes = obj[dir][i]["size"];
-  // let size = String(bytes);
-
   if (bytes < 0) {
     return "Invalid size";
   } else if (bytes === 0) {
     return "0 B";
   }
-
   const sizes = ["B", "KB", "MB", "GB", "TB"];
   const unit = Math.floor(Math.log(bytes) / Math.log(1024));
   const size = (bytes / Math.pow(1024, unit)).toFixed(2);

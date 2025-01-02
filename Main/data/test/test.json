@@ -1,202 +1,783 @@
 {
   "/": [
     {
-      "filename": "asap#png#.zip",
-      "size": 28754,
+      "filename": "file#png#.zip",
+      "size": 927606,
       "extension": "png",
-      "creation_date": "01-01-2025 22:43",
-      "modified_date": "13-11-2024 15:00"
+      "creation_date": "03-01-2025 00:34",
+      "modified_date": "12-07-2024 16:19"
     },
-    {
-      "filename": "nikl1#png#.zip",
-      "size": 4325,
-      "extension": "png",
-      "creation_date": "01-01-2025 22:41",
-      "modified_date": "28-12-2024 22:14"
-    },
+    { "folder": "/Pocket_server" },
     { "folder": "/adr" },
     {
-      "filename": "OMEN_PortalWP_04.jpg",
-      "size": 6535325,
+      "filename": "t9.png",
+      "size": 100287,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "15-11-2024 19:21"
+    },
+    {
+      "filename": "Screenshot 2024-12-28 030139.png",
+      "size": 54702,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "28-12-2024 03:01"
+    },
+    {
+      "filename": "test4.png",
+      "size": 6328,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "24-12-2024 10:51"
+    },
+    {
+      "filename": "test5.png",
+      "size": 47391,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "25-11-2024 19:33"
+    },
+    {
+      "filename": "test6.png",
+      "size": 50386,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "25-11-2024 19:02"
+    },
+    {
+      "filename": "tes7.png",
+      "size": 93829,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "17-11-2024 16:19"
+    },
+    {
+      "filename": "t4.png",
+      "size": 100838,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "17-11-2024 16:18"
+    },
+    {
+      "filename": "t8.png",
+      "size": 87324,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "17-11-2024 16:17"
+    },
+    {
+      "filename": "t5.png",
+      "size": 71960,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "17-11-2024 16:17"
+    },
+    {
+      "filename": "t6.png",
+      "size": 94992,
+      "extension": "png",
+      "creation_date": "03-01-2025 00:16",
+      "modified_date": "17-11-2024 16:16"
+    },
+    {
+      "filename": "instapost#jpg#.zip",
+      "size": 548481,
       "extension": "jpg",
-      "creation_date": "28-12-2024 10:01",
-      "modified_date": "08-06-2024 22:20"
-    },
-    { "folder": "/ss" },
-    {
-      "filename": "Exp8_writeup.docx",
-      "size": 62074,
-      "extension": "docx",
-      "creation_date": "28-12-2024 11:50",
-      "modified_date": "23-10-2024 21:55"
-    },
-    {
-      "filename": "pbc business proposal.docx",
-      "size": 1396312,
-      "extension": "docx",
-      "creation_date": "28-12-2024 11:50",
-      "modified_date": "07-11-2024 17:41"
-    },
-    {
-      "filename": "pbc learship skills.docx",
-      "size": 20692,
-      "extension": "docx",
-      "creation_date": "28-12-2024 11:50",
-      "modified_date": "09-11-2024 07:52"
-    },
-    { "folder": "/ASSEMBLY_ASSIGMENT_PARTS" },
-    {
-      "filename": "ASSEMBLYPT!.SLDPRT",
-      "size": 100811,
-      "extension": "SLDPRT",
-      "creation_date": "25-10-2024 20:03",
-      "modified_date": "26-10-2024 19:05"
-    },
-    {
-      "filename": "Part1.SLDPRT",
-      "size": 110224,
-      "extension": "SLDPRT",
-      "creation_date": "12-07-2024 14:25",
-      "modified_date": "12-07-2024 14:54"
-    },
-    {
-      "filename": "Part1A.SLDPRT",
-      "size": 77763,
-      "extension": "SLDPRT",
-      "creation_date": "26-10-2024 19:15",
-      "modified_date": "26-10-2024 19:19"
-    },
-    {
-      "filename": "Part6.SLDPRT",
-      "size": 80246,
-      "extension": "SLDPRT",
-      "creation_date": "26-10-2024 18:52",
-      "modified_date": "26-10-2024 18:52"
-    },
-    {
-      "filename": "IPD.SLDPRT",
-      "size": 13552099,
-      "extension": "SLDPRT",
-      "creation_date": "28-12-2024 12:28",
-      "modified_date": "28-12-2024 06:54"
+      "creation_date": "03-01-2025 00:30",
+      "modified_date": "01-07-2024 16:23"
     },
     {
       "filename": "file_data.json.zip",
-      "size": 136,
+      "size": 166,
       "extension": "zip",
-      "creation_date": "01-01-1980 00:05",
-      "modified_date": "01-01-1980 00:05"
+      "creation_date": "01-01-1980 00:01",
+      "modified_date": "01-01-1980 00:01"
     },
     {
-      "filename": "asap4#png#.zip",
-      "size": 3062,
+      "filename": "original-a950bcc3922d2f56a370216e6b8ff189#png#.zip",
+      "size": 146390,
       "extension": "png",
-      "creation_date": "01-01-2025 22:42",
-      "modified_date": "28-12-2024 22:13"
+      "creation_date": "03-01-2025 00:35",
+      "modified_date": "19-07-2024 12:49"
+    }
+  ],
+  "/Pocket_server/": [
+    {
+      "filename": "index.html",
+      "size": 22479,
+      "extension": "html",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "24-12-2024 13:16"
     },
     {
-      "filename": "Sprint Planning.pdf",
-      "size": 83909,
-      "extension": "pdf",
-      "creation_date": "29-12-2024 15:50",
-      "modified_date": "17-11-2024 12:26"
+      "filename": "Pocket_server.ino",
+      "size": 6270,
+      "extension": "ino",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "26-12-2024 22:49"
+    },
+    { "folder": "/Pocket_server/.theia" },
+    { "folder": "/Pocket_server/data" },
+    { "folder": "/Pocket_server/file_creation_and_modification" },
+    { "folder": "/Pocket_server/icon" },
+    { "folder": "/Pocket_server/Indie_Flower" },
+    { "folder": "/Pocket_server/Main" },
+    { "folder": "/Pocket_server/Orbitron" },
+    { "folder": "/Pocket_server/Oxanium" },
+    { "folder": "/Pocket_server/Poppins" },
+    { "folder": "/Pocket_server/recieve_zip_from_webclient" }
+  ],
+  "/Pocket_server/.theia/": [
+    {
+      "filename": "launch.json",
+      "size": 169,
+      "extension": "json",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "23-11-2024 21:39"
+    }
+  ],
+  "/Pocket_server/data/": [
+    {
+      "filename": "icons.json",
+      "size": 24879,
+      "extension": "json",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "26-12-2024 12:00"
     },
     {
-      "filename": "shell32.dll",
-      "size": 7385384,
-      "extension": "dll",
-      "creation_date": "29-12-2024 15:50",
-      "modified_date": "28-12-2024 21:14"
+      "filename": "index.html",
+      "size": 22776,
+      "extension": "html",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "26-12-2024 22:06"
     },
     {
-      "filename": "WhatsApp Audio 2024-12-25 at 12.29.34_e224f0e7.waptt.opus",
-      "size": 6621,
-      "extension": "opus",
-      "creation_date": "29-12-2024 15:51",
-      "modified_date": "25-12-2024 12:38"
+      "filename": "jszip.js",
+      "size": 486742,
+      "extension": "js",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "19-12-2024 11:51"
     },
     {
-      "filename": "Screenshot 2024-10-06 153958#png#.zip",
-      "size": 67766,
-      "extension": "png",
-      "creation_date": "05-01-2025 20:34",
-      "modified_date": "06-10-2024 15:39"
+      "filename": "jszip.min.js",
+      "size": 221713,
+      "extension": "js",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "19-12-2024 11:51"
     },
     {
-      "filename": "shell32.zip",
-      "size": 3407752,
-      "extension": "zip",
-      "creation_date": "01-01-2025 13:40",
-      "modified_date": "01-01-2025 00:51"
+      "filename": "MIME.json",
+      "size": 27320,
+      "extension": "json",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "20-11-2024 21:16"
+    },
+    {
+      "filename": "Oxanium-VariableFont_wght.ttf",
+      "size": 43108,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "script.js",
+      "size": 8797,
+      "extension": "js",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "26-12-2024 17:35"
+    },
+    {
+      "filename": "style2.css",
+      "size": 10353,
+      "extension": "css",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "26-12-2024 20:01"
+    },
+    {
+      "filename": "test.bmp",
+      "size": 69814,
+      "extension": "bmp",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "15-08-2024 12:57"
+    },
+    {
+      "filename": "test.json",
+      "size": 174,
+      "extension": "json",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "26-12-2024 11:23"
+    }
+  ],
+  "/Pocket_server/file_creation_and_modification/": [
+    {
+      "filename": "file_creation_and_modification.ino",
+      "size": 2346,
+      "extension": "ino",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "28-12-2024 09:56"
+    }
+  ],
+  "/Pocket_server/icon/": [
+    {
+      "filename": "bin.svg",
+      "size": 1829,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 02:02"
+    },
+    {
+      "filename": "bmp.svg",
+      "size": 2646,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "25-08-2024 16:40"
+    },
+    {
+      "filename": "csv.svg",
+      "size": 3605,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 01:25"
+    },
+    {
+      "filename": "dwg.svg",
+      "size": 2504,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 20:50"
+    },
+    {
+      "filename": "folder.svg",
+      "size": 178,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 20:30"
+    },
+    {
+      "filename": "ino.svg",
+      "size": 1510,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 22:37"
+    },
+    {
+      "filename": "jpg.svg",
+      "size": 1964,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "25-08-2024 16:18"
+    },
+    {
+      "filename": "mp3.svg",
+      "size": 678,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 01:43"
+    },
+    {
+      "filename": "pdf.svg",
+      "size": 1880,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "25-08-2024 16:02"
+    },
+    {
+      "filename": "png.svg",
+      "size": 2203,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "25-08-2024 16:05"
+    },
+    {
+      "filename": "ppt.svg",
+      "size": 1755,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "25-08-2024 16:41"
+    },
+    {
+      "filename": "sldprt.svg",
+      "size": 1756,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 20:50"
+    },
+    {
+      "filename": "svg.svg",
+      "size": 3394,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 17:57"
+    },
+    {
+      "filename": "txt.svg",
+      "size": 3744,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 01:47"
+    },
+    {
+      "filename": "word.svg",
+      "size": 2019,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "25-08-2024 16:25"
+    },
+    {
+      "filename": "xlsx.svg",
+      "size": 1797,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "25-08-2024 16:44"
+    }
+  ],
+  "/Pocket_server/Indie_Flower/": [
+    {
+      "filename": "IndieFlower-Regular.ttf",
+      "size": 55416,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "OFL.txt",
+      "size": 4456,
+      "extension": "txt",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "22-09-2024 01:32"
+    }
+  ],
+  "/Pocket_server/Main/": [
+    {
+      "filename": "Main.ino",
+      "size": 7219,
+      "extension": "ino",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 23:35"
+    },
+    { "folder": "/Pocket_server/Main/data" }
+  ],
+  "/Pocket_server/Main/data/": [
+    {
+      "filename": "file_icons.json",
+      "size": 85797,
+      "extension": "json",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 23:06"
+    },
+    {
+      "filename": "index.html",
+      "size": 22145,
+      "extension": "html",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "31-12-2024 14:23"
+    },
+    {
+      "filename": "jszip.js",
+      "size": 486742,
+      "extension": "js",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "19-12-2024 11:51"
+    },
+    {
+      "filename": "jszip.min.js",
+      "size": 221713,
+      "extension": "js",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "19-12-2024 11:51"
+    },
+    {
+      "filename": "MIME.json",
+      "size": 27320,
+      "extension": "json",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "20-11-2024 21:16"
+    },
+    {
+      "filename": "Oxanium-VariableFont_wght.ttf",
+      "size": 43108,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "script.js",
+      "size": 7111,
+      "extension": "js",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 23:09"
+    },
+    {
+      "filename": "style2.css",
+      "size": 10542,
+      "extension": "css",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "31-12-2024 14:16"
+    },
+    {
+      "filename": "test.bmp",
+      "size": 69814,
+      "extension": "bmp",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "15-08-2024 12:57"
+    },
+    { "folder": "/Pocket_server/Main/data/svg" },
+    { "folder": "/Pocket_server/Main/data/test" }
+  ],
+  "/Pocket_server/Main/data/svg/": [
+    {
+      "filename": "docx.svg",
+      "size": 18672,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 14:34"
+    },
+    {
+      "filename": "pdf.svg",
+      "size": 2228,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 14:47"
+    },
+    {
+      "filename": "unknown file.svg",
+      "size": 994,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 21:30"
+    },
+    {
+      "filename": "xlsx.svg",
+      "size": 21020,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 14:47"
+    },
+    {
+      "filename": "zip.svg",
+      "size": 24616,
+      "extension": "svg",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 14:46"
+    }
+  ],
+  "/Pocket_server/Main/data/test/": [
+    {
+      "filename": "test.json",
+      "size": 7262,
+      "extension": "json",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "30-12-2024 15:01"
+    }
+  ],
+  "/Pocket_server/Orbitron/": [
+    {
+      "filename": "OFL.txt",
+      "size": 4520,
+      "extension": "txt",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "22-09-2024 01:32"
+    },
+    {
+      "filename": "Orbitron-VariableFont_wght.ttf",
+      "size": 38012,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "README.txt",
+      "size": 2261,
+      "extension": "txt",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "22-09-2024 01:32"
+    },
+    { "folder": "/Pocket_server/Orbitron/static" }
+  ],
+  "/Pocket_server/Orbitron/static/": [
+    {
+      "filename": "Orbitron-Black.ttf",
+      "size": 23396,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Orbitron-Bold.ttf",
+      "size": 24672,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Orbitron-ExtraBold.ttf",
+      "size": 24700,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Orbitron-Medium.ttf",
+      "size": 24756,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Orbitron-Regular.ttf",
+      "size": 24720,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Orbitron-SemiBold.ttf",
+      "size": 24736,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    }
+  ],
+  "/Pocket_server/Oxanium/": [
+    {
+      "filename": "OFL.txt",
+      "size": 4478,
+      "extension": "txt",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "22-09-2024 01:32"
+    },
+    {
+      "filename": "Oxanium-VariableFont_wght.ttf",
+      "size": 43108,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "README.txt",
+      "size": 2282,
+      "extension": "txt",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "22-09-2024 01:32"
+    },
+    { "folder": "/Pocket_server/Oxanium/static" }
+  ],
+  "/Pocket_server/Oxanium/static/": [
+    {
+      "filename": "Oxanium-Bold.ttf",
+      "size": 29436,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Oxanium-ExtraBold.ttf",
+      "size": 29476,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Oxanium-ExtraLight.ttf",
+      "size": 29592,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Oxanium-Light.ttf",
+      "size": 29540,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Oxanium-Medium.ttf",
+      "size": 29504,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Oxanium-Regular.ttf",
+      "size": 29476,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Oxanium-SemiBold.ttf",
+      "size": 29496,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    }
+  ],
+  "/Pocket_server/Poppins/": [
+    {
+      "filename": "OFL.txt",
+      "size": 4479,
+      "extension": "txt",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "22-09-2024 01:32"
+    },
+    {
+      "filename": "Poppins-Black.ttf",
+      "size": 151396,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-BlackItalic.ttf",
+      "size": 171604,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-Bold.ttf",
+      "size": 153944,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-BoldItalic.ttf",
+      "size": 176588,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-ExtraBold.ttf",
+      "size": 152764,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-ExtraBoldItalic.ttf",
+      "size": 173916,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-ExtraLight.ttf",
+      "size": 161456,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-ExtraLightItalic.ttf",
+      "size": 186168,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-Italic.ttf",
+      "size": 182012,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-Light.ttf",
+      "size": 159892,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-LightItalic.ttf",
+      "size": 184460,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-Medium.ttf",
+      "size": 156520,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-MediumItalic.ttf",
+      "size": 180444,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-Regular.ttf",
+      "size": 158240,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-SemiBold.ttf",
+      "size": 155232,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-SemiBoldItalic.ttf",
+      "size": 178584,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-Thin.ttf",
+      "size": 161652,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    },
+    {
+      "filename": "Poppins-ThinItalic.ttf",
+      "size": 187044,
+      "extension": "ttf",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "05-09-2024 04:41"
+    }
+  ],
+  "/Pocket_server/recieve_zip_from_webclient/": [
+    {
+      "filename": "recieve_zip_from_webclient.ino",
+      "size": 2914,
+      "extension": "ino",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "27-12-2024 15:40"
     }
   ],
   "/adr/": [
     {
-      "filename": "ziptest_client_to_server.ino",
-      "size": 2914,
-      "extension": "ino",
-      "creation_date": "28-12-2024 10:01",
-      "modified_date": "25-12-2024 19:40"
-    }
-  ],
-  "/ss/": [
-    {
-      "filename": "Screenshot 2024-08-06 231323.png",
-      "size": 247699,
-      "extension": "png",
-      "creation_date": "28-12-2024 11:40",
-      "modified_date": "28-12-2024 11:40"
+      "filename": "style2.css",
+      "size": 6357,
+      "extension": "css",
+      "creation_date": "02-01-2025 23:57",
+      "modified_date": "02-11-2024 20:27"
     },
     {
-      "filename": "Screenshot 2024-08-07 211432.png",
-      "size": 95355,
-      "extension": "png",
-      "creation_date": "28-12-2024 11:49",
-      "modified_date": "07-08-2024 21:14"
+      "filename": "edit_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24#svg#.zip",
+      "size": 425,
+      "extension": "svg",
+      "creation_date": "01-01-1980 00:05",
+      "modified_date": "01-01-1980 00:05"
     },
     {
-      "filename": "Screenshot 2024-09-09 221410.png",
-      "size": 125175,
-      "extension": "png",
-      "creation_date": "28-12-2024 11:49",
-      "modified_date": "09-09-2024 22:14"
-    },
-    {
-      "filename": "Screenshot 2024-09-24 225445.png",
-      "size": 111620,
-      "extension": "png",
-      "creation_date": "28-12-2024 11:49",
-      "modified_date": "24-09-2024 22:54"
-    }
-  ],
-  "/ASSEMBLY_ASSIGMENT_PARTS/": [
-    {
-      "filename": "Part1.SLDPRT",
-      "size": 128026,
-      "extension": "SLDPRT",
-      "creation_date": "27-10-2024 14:15",
-      "modified_date": "28-12-2024 11:55"
-    },
-    {
-      "filename": "Part5.SLDPRT",
-      "size": 853078,
-      "extension": "SLDPRT",
-      "creation_date": "27-10-2024 11:57",
-      "modified_date": "27-10-2024 12:33"
-    },
-    {
-      "filename": "Part6.SLDPRT",
-      "size": 528803,
-      "extension": "SLDPRT",
-      "creation_date": "27-10-2024 12:50",
-      "modified_date": "27-10-2024 12:53"
-    },
-    {
-      "filename": "Part7.SLDPRT",
-      "size": 361414,
-      "extension": "SLDPRT",
-      "creation_date": "27-10-2024 12:37",
-      "modified_date": "27-10-2024 12:48"
+      "filename": "facebook#svg#.zip",
+      "size": 530,
+      "extension": "svg",
+      "creation_date": "01-01-1980 00:06",
+      "modified_date": "01-01-1980 00:06"
     }
   ]
 }

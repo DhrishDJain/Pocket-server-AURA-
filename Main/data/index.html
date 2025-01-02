@@ -7,7 +7,7 @@
     <title>AURA_DB</title>
 
     <link rel="stylesheet" href="style.css" />
-    <script src="/script6.js"></script>
+    <script src="/script.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -152,15 +152,13 @@
                   "#";
 
                 formData.append("file", zipBlob, filename);
-                console.log(date);
                 const jsonData = {
                   filename: filename,
                   creation_date: formatDate(date),
                   modified_date: formatDate(new Date(file.lastModified)),
-                  path: file.name,
+                  path: "/adr/",
                   extension: file.name.split(".").pop(),
                 };
-                console.log(jsonData);
                 formData.append(
                   "metadata",
                   new Blob([JSON.stringify(jsonData)], {
@@ -177,7 +175,16 @@
                     if (!response.ok) {
                       throw new Error("Network response was not ok");
                     }
-                    
+                  })
+                  .then(() => {
+                    const directoryPath = jsonData.path;
+                    connction.send(
+                      JSON.stringify({
+                        action: "sendJson",
+                        path: directoryPath,
+                      })
+                    );
+                    console.log("UPLOAD SUCCESS");
                   })
                   .catch((error) => {
                     console.error(

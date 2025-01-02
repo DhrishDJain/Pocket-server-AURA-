@@ -32,53 +32,51 @@ uint8_t day = 0;
 uint8_t hour = 0;
 uint8_t minute = 0;
 uint8_t second = 0;
-void formatTimestamp(char *buffer, size_t size, uint16_t date, uint16_t time) {
-  uint8_t day = date & 0x1F;
-  uint8_t month = (date >> 5) & 0x0F;
-  uint16_t year = 1980 + ((date >> 9) & 0x7F);
-  uint8_t hours = (time >> 11) & 0x1F;
-  uint8_t minutes = (time >> 5) & 0x3F;
 
-  snprintf(buffer, size, "%02d-%02d-%04d %02d:%02d", day, month, year, hours, minutes);
+// ==================================================HANDEL WEBSOCKET=========================================================
+
+void sendtxt(String txt, uint8_t clientId) {
+  Serial.println(txt);
+  websockets.sendTXT(clientId, txt);
 }
-bool parseDate(const char *dateStr) {
-  int d, m, y, h, min, s;
-  if (sscanf(dateStr, "%2d-%2d-%4d %2d:%2d:%2d", &d, &m, &y, &h, &min, &s) != 6) {
-    return false;
-  }
-  day = static_cast<uint8_t>(d);
-  month = static_cast<uint8_t>(m);
-  year = static_cast<uint16_t>(y);
-  hour = static_cast<uint8_t>(h);
-  minute = static_cast<uint8_t>(min);
-  second = static_cast<uint8_t>(s);
-  return true;
-}
-String getTimestamps(FatFile &f, bool isCreation) {
-  uint16_t date, time;
-  if (isCreation ? f.getCreateDateTime(&date, &time) : f.getModifyDateTime(&date, &time)) {
-    char timestamp[20];  // Sufficient size for the formatted string
-    formatTimestamp(timestamp, sizeof(timestamp), date, time);
-    return String(timestamp);
-  } else {
-    Serial.println(isCreation ? "Failed to get creation date and time." : "Failed to get modified date and time.");
-    return "";  // Return an empty string on failure
-  }
-}
+// void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t length) {
+//   if (type == WStype_CONNECTED) {
+//     IPAddress ip = websockets.remoteIP(clientId);
+//     Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", clientId, ip[0], ip[1], ip[2], ip[3], payload);
+//     sendJson(clientId);
+//   }
+// }
+
 void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t length) {
   if (type == WStype_CONNECTED) {
     IPAddress ip = websockets.remoteIP(clientId);
-    Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", clientId, ip[0], ip[1], ip[2], ip[3], payload);
-    sendJson(clientId);
+    Serial.printf("[%u] Connected from %d.%d.%d.%d\n", clientId, ip[0], ip[1], ip[2], ip[3]);
+    // sendJson(clientId;);
+  } else if (type == WStype_TEXT) {
+    // Convert the received payload to a String
+    String receivedPayload((char *)payload, length);
+    // Log the received payload
+    Serial.printf("Received from client [%u]: %s\n", clientId, receivedPayload.c_str());
+    // Create a JSON document to parse the received payload
+    DynamicJsonDocument message(1024);  // Adjust size as needed
+    DeserializationError error = deserializeJson(message, receivedPayload);
+
+    if (error) {
+      Serial.print(F("deserializeJson() failed: "));
+      Serial.println(error.f_str());
+      return;  // Exit if JSON parsing fails
+    }
+    if (message.containsKey("path")) {
+      sendJson(clientId, message["path"]);
+    }
   }
 }
-void sendJson(uint8_t clientId) {
+void sendJson(uint8_t clientId, String dirpath) {
   StaticJsonDocument<2048> jsonDoc;
-  buildJson("/", jsonDoc);
+  buildJson(dirpath, jsonDoc);
   String jsonString;
   serializeJson(jsonDoc, jsonString);
   sendtxt(jsonString, clientId);
-  sendtxt("DONE", clientId);
 }
 void buildJson(const String &path, JsonDocument &jsonDoc) {
   JsonArray array = jsonDoc.createNestedArray(path);
@@ -124,7 +122,7 @@ void buildJson(const String &path, JsonDocument &jsonDoc) {
         }
         fafile.close();
         if (!fafile.open(file.path(), O_READ)) {
-          error("open default.txt failed");
+          error("open file in buil json funct failed");
         }
         fileInfo["creation_date"] = getTimestamps(fafile, true);
         fileInfo["modified_date"] = getTimestamps(fafile, false);
@@ -134,31 +132,41 @@ void buildJson(const String &path, JsonDocument &jsonDoc) {
   }
   dir.close();
 }
-void sendtxt(String txt, uint8_t clientId) {
-  Serial.println(txt);
-  websockets.sendTXT(clientId, txt);
+
+// ==================================================HANDEL UPLOAD============================================================
+
+void formatTimestamp(char *buffer, size_t size, uint16_t date, uint16_t time) {
+  uint8_t day = date & 0x1F;
+  uint8_t month = (date >> 5) & 0x0F;
+  uint16_t year = 1980 + ((date >> 9) & 0x7F);
+  uint8_t hours = (time >> 11) & 0x1F;
+  uint8_t minutes = (time >> 5) & 0x3F;
+
+  snprintf(buffer, size, "%02d-%02d-%04d %02d:%02d", day, month, year, hours, minutes);
 }
-void initLittleFS() {
-  if (!LittleFS.begin()) {
-    Serial.println("An error has occurred while mounting LittleFS");
-  } else {
-    Serial.println("LittleFS mounted successfully");
+bool parseDate(const char *dateStr) {
+  int d, m, y, h, min, s;
+  if (sscanf(dateStr, "%2d-%2d-%4d %2d:%2d:%2d", &d, &m, &y, &h, &min, &s) != 6) {
+    return false;
   }
+  day = static_cast<uint8_t>(d);
+  month = static_cast<uint8_t>(m);
+  year = static_cast<uint16_t>(y);
+  hour = static_cast<uint8_t>(h);
+  minute = static_cast<uint8_t>(min);
+  second = static_cast<uint8_t>(s);
+  return true;
 }
-String getMimeType(String filename) {
-  if (filename.endsWith(".html")) return "text/html";
-  else if (filename.endsWith(".htm")) return "text/html";
-  else if (filename.endsWith(".css")) return "text/css";
-  else if (filename.endsWith(".js")) return "application/javascript";
-  else if (filename.endsWith(".json")) return "application/json";
-  else if (filename.endsWith(".png")) return "image/png";
-  else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) return "image/jpeg";
-  else if (filename.endsWith(".gif")) return "image/gif";
-  else if (filename.endsWith(".svg")) return "image/svg+xml";
-  else if (filename.endsWith(".pdf")) return "application/pdf";
-  else if (filename.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  else if (filename.endsWith(".zip")) return "application/zip";
-  else return "application/octet-stream";  // Default for unknown types
+String getTimestamps(FatFile &f, bool isCreation) {
+  uint16_t date, time;
+  if (isCreation ? f.getCreateDateTime(&date, &time) : f.getModifyDateTime(&date, &time)) {
+    char timestamp[20];  // Sufficient size for the formatted string
+    formatTimestamp(timestamp, sizeof(timestamp), date, time);
+    return String(timestamp);
+  } else {
+    Serial.println(isCreation ? "Failed to get creation date and time." : "Failed to get modified date and time.");
+    return "";  // Return an empty string on failure
+  }
 }
 void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
   if (index == 0) {
@@ -199,12 +207,50 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       const char *path = doc["path"];
       SdFile::dateTimeCallbackCancel();
 
+      // =============================================MOVING FILE TO DESTINATION=========================================
+      // Move the file to the new path
+      String newFilePath = String(path) + tragetfile + ".zip";  // Construct the new file path
+      if (SD.exists(newFilePath)) {
+        Serial.println("File already exists at the new location. Cannot move.");
+      } else {
+        // Open the source file for reading
+        File sourceFile = SD.open(("/" + tragetfile + ".zip").c_str(), FILE_READ);
+        if (!sourceFile) {
+          Serial.println("Failed to open source file for reading");
+          return;
+        }
 
+        // Open the destination file for writing
+        File destFile = SD.open(newFilePath.c_str(), FILE_WRITE);
+        if (!destFile) {
+          Serial.println("Failed to open destination file for writing");
+          sourceFile.close();
+          return;
+        }
+
+        // Copy the contents from the source file to the destination file
+        while (sourceFile.available()) {
+          destFile.write(sourceFile.read());
+        }
+
+        // Close both files
+        sourceFile.close();
+        destFile.close();
+
+        // Delete the original file
+        if (SD.remove(("/" + tragetfile + ".zip").c_str())) {
+          Serial.println("Original file deleted successfully!");
+        } else {
+          Serial.println("Error deleting original file!");
+        }
+      }
+      delay(1000);
+      // ===================================================DATE SETTINNG=================================================
       if (!parseDate(creation_date)) {
         Serial.println("Failed to parse modified date");
         return;
       }
-      if (sdfile.open(("/" + tragetfile + ".zip").c_str(), O_WRITE)) {
+      if (sdfile.open(newFilePath.c_str(), O_WRITE)) {
         if (!sdfile.timestamp(T_CREATE, year, month, day, hour, minute, second)) {
           Serial.println("Failed to set creation date");
         }
@@ -217,7 +263,7 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
         Serial.println("Failed to parse modified date");
         return;
       }
-      if (sdfile.open(("/" + tragetfile + ".zip").c_str(), O_WRITE)) {
+      if (sdfile.open(newFilePath.c_str(), O_WRITE)) {
         if (!sdfile.timestamp(T_WRITE, year, month, day, hour, minute, second)) {
           Serial.print("Failed to set modification date, error code: ");
         }
@@ -233,21 +279,35 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       Serial.println("creation_date: " + String(creation_date));
       Serial.println("modified_date: " + String(modified_date));
       Serial.println("Path: " + String(path));
-      if (SD.exists("/file_data.json.zip")) {  // Check if file exists
-        if (SD.remove("/file_data.json.zip")) {  // Delete the file
-          Serial.println("File deleted successfully!");
-        } else {
-          Serial.println("Error deleting file!");
-        }
-      } else {
-        Serial.println("File not found!");
-      }
+
+      request->send(200, "text/plain", "Upload Sucess");
     }
   }
 }
+// ==================================================HANDEL DOWNLOAD==========================================================
+
+String getMimeType(String filename) {
+  if (filename.endsWith(".html")) return "text/html";
+  else if (filename.endsWith(".htm")) return "text/html";
+  else if (filename.endsWith(".css")) return "text/css";
+  else if (filename.endsWith(".js")) return "application/javascript";
+  else if (filename.endsWith(".json")) return "application/json";
+  else if (filename.endsWith(".png")) return "image/png";
+  else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) return "image/jpeg";
+  else if (filename.endsWith(".gif")) return "image/gif";
+  else if (filename.endsWith(".svg")) return "image/svg+xml";
+  else if (filename.endsWith(".pdf")) return "application/pdf";
+  else if (filename.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  else if (filename.endsWith(".zip")) return "application/zip";
+  else return "application/octet-stream";  // Default for unknown types
+}
 void setup() {
   Serial.begin(115200);
-  initLittleFS();
+  if (!LittleFS.begin()) {
+    Serial.println("An error has occurred while mounting LittleFS");
+  } else {
+    Serial.println("LittleFS mounted successfully");
+  }
   SPI.begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
   SPI.setFrequency(1000000);
   while (!SD.begin(SD_CS)) {
@@ -268,7 +328,9 @@ void setup() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html", false);
   });
-
+  server.on("/readstorage", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "SD card read");
+  });
   server.serveStatic("/", LittleFS, "/");
   server.on(
     "/handleupload", HTTP_POST, [](AsyncWebServerRequest *request) {},
