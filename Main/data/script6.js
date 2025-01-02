@@ -27,6 +27,7 @@ function files_in_storeage(event) {
     return;
   }
   obj = JSON.parse(event.data);
+  console.log(obj)
   obj["/"].shift();
   delete obj["/System Volume Information"];
 }

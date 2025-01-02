@@ -71,6 +71,30 @@ void setup(void) {
   Serial.print(modified_hours);
   Serial.print(":");
   Serial.println(modified_minutes);
+
+  SdFile::dateTimeCallbackCancel();
+  // create a new fafile with default timestamps
+  if (!fafile.open("/nikl1#png#.zip", O_WRITE)) {
+    error("open stamp.txt failed");
+  }
+  // set creation date time
+  if (!fafile.timestamp(T_CREATE, 2014, 8, 10, 1, 2, 3)) {
+    error("set create time failed");
+  }
+  // set write/modification date time
+  if (!fafile.timestamp(T_WRITE, 2014, 10, 5, 22, 14, 6)) {
+    error("set write time failed");
+  }
+  // set access date
+  if (!fafile.timestamp(T_ACCESS, 2014, 11, 12, 7, 8, 9)) {
+    error("set access time failed");
+  }
+  Serial.println("\nTimes after timestamp() calls\n");
+  printTimestamps(fafile);
+
+  fafile.close();
+  Serial.println("\nDone\n");
+}
 }
 
 void loop() {}

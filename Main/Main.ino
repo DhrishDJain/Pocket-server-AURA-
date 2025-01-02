@@ -12,7 +12,7 @@
 
 SdFat sd;
 FatFile fafile;
-
+SdFile sdfile;
 #define SD_CS 27
 #define SD_SCLK 14
 #define SD_MOSI 12
@@ -26,7 +26,12 @@ AsyncWebServer server(80);
 WebSocketsServer websockets(81);
 JsonDocument dbfiles;
 File file;
-
+uint16_t year = 0;
+uint8_t month = 0;
+uint8_t day = 0;
+uint8_t hour = 0;
+uint8_t minute = 0;
+uint8_t second = 0;
 void formatTimestamp(char *buffer, size_t size, uint16_t date, uint16_t time) {
   uint8_t day = date & 0x1F;
   uint8_t month = (date >> 5) & 0x0F;
@@ -36,7 +41,19 @@ void formatTimestamp(char *buffer, size_t size, uint16_t date, uint16_t time) {
 
   snprintf(buffer, size, "%02d-%02d-%04d %02d:%02d", day, month, year, hours, minutes);
 }
-
+bool parseDate(const char *dateStr) {
+  int d, m, y, h, min, s;
+  if (sscanf(dateStr, "%2d-%2d-%4d %2d:%2d:%2d", &d, &m, &y, &h, &min, &s) != 6) {
+    return false;
+  }
+  day = static_cast<uint8_t>(d);
+  month = static_cast<uint8_t>(m);
+  year = static_cast<uint16_t>(y);
+  hour = static_cast<uint8_t>(h);
+  minute = static_cast<uint8_t>(min);
+  second = static_cast<uint8_t>(s);
+  return true;
+}
 String getTimestamps(FatFile &f, bool isCreation) {
   uint16_t date, time;
   if (isCreation ? f.getCreateDateTime(&date, &time) : f.getModifyDateTime(&date, &time)) {
@@ -98,9 +115,9 @@ void buildJson(const String &path, JsonDocument &jsonDoc) {
           fileInfo["extension"] = extension;
         } else {
           int secondLastUnderscoreIndex = (lastUnderscoreIndex != -1) ? fileName.lastIndexOf('#', lastUnderscoreIndex - 1) : -1;
-
           if (lastUnderscoreIndex != -1 && secondLastUnderscoreIndex != -1) {
             fileInfo["extension"] = fileName.substring(secondLastUnderscoreIndex + 1, lastUnderscoreIndex);
+
           } else {
             fileInfo["extension"] = extension;
           }
@@ -152,6 +169,7 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       return;
     }
   }
+
   // Write the received data to the file
   if (file) {
     file.write(data, len);  // Write the data chunk
@@ -163,35 +181,70 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
   if (final) {  // If this is the last chunk
     Serial.printf("UploadEnd: %s\n", filename.c_str());
     file.close();
+
     if (filename == "file_data.json") {
       // Parse the JSON metadata
       DynamicJsonDocument doc(1024);
       DeserializationError error = deserializeJson(doc, String((char *)data, len));
 
-      if (!error) {
-        const char *creation_date = doc["creation_date"];
-        const char *modified_date = doc["modified_date"];
-        const char *extension = doc["extension"];
-        const char *path = doc["path"];
-
-        Serial.println();
-        Serial.println("=====================================");
-        Serial.println("Metadata received:");
-        Serial.println("=====================================");
-        Serial.println("creation_date: " + String(creation_date));
-        Serial.println("modified_date: " + String(modified_date));
-        Serial.println("Extension: " + String(extension));
-        Serial.println("Path: " + String(path));
-      } else {
+      if (error) {
         Serial.println("Failed to parse JSON metadata");
+        Serial.println(error.c_str());  // Print the error message
+        return;                         // Exit if JSON parsing fails
       }
-      delay(1000);
+
+      String tragetfile = doc["filename"];
+      const char *creation_date = doc["creation_date"];
+      const char *modified_date = doc["modified_date"];
+      const char *path = doc["path"];
+      SdFile::dateTimeCallbackCancel();
+
+
+      if (!parseDate(creation_date)) {
+        Serial.println("Failed to parse modified date");
+        return;
+      }
+      if (sdfile.open(("/" + tragetfile + ".zip").c_str(), O_WRITE)) {
+        if (!sdfile.timestamp(T_CREATE, year, month, day, hour, minute, second)) {
+          Serial.println("Failed to set creation date");
+        }
+        sdfile.close();
+      } else {
+        Serial.println("Failed to reopen file for setting creation date");
+      }
+      // Parse the date string
+      if (!parseDate(modified_date)) {
+        Serial.println("Failed to parse modified date");
+        return;
+      }
+      if (sdfile.open(("/" + tragetfile + ".zip").c_str(), O_WRITE)) {
+        if (!sdfile.timestamp(T_WRITE, year, month, day, hour, minute, second)) {
+          Serial.print("Failed to set modification date, error code: ");
+        }
+        sdfile.close();
+      } else {
+        Serial.println("Failed to reopen file for setting modification date");
+      }
+
+      Serial.println("=====================================");
+      Serial.println("Metadata received:");
+      Serial.println("=====================================");
+      Serial.println("tragetfile: " + String(tragetfile));
+      Serial.println("creation_date: " + String(creation_date));
+      Serial.println("modified_date: " + String(modified_date));
+      Serial.println("Path: " + String(path));
+      if (SD.exists("/file_data.json.zip")) {  // Check if file exists
+        if (SD.remove("/file_data.json.zip")) {  // Delete the file
+          Serial.println("File deleted successfully!");
+        } else {
+          Serial.println("Error deleting file!");
+        }
+      } else {
+        Serial.println("File not found!");
+      }
     }
-    file.close();
-    request->redirect("/");
   }
 }
-
 void setup() {
   Serial.begin(115200);
   initLittleFS();
