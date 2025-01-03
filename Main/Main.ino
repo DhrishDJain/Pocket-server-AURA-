@@ -39,32 +39,21 @@ void sendtxt(String txt, uint8_t clientId) {
   Serial.println(txt);
   websockets.sendTXT(clientId, txt);
 }
-// void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t length) {
-//   if (type == WStype_CONNECTED) {
-//     IPAddress ip = websockets.remoteIP(clientId);
-//     Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", clientId, ip[0], ip[1], ip[2], ip[3], payload);
-//     sendJson(clientId);
-//   }
-// }
 
 void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t length) {
   if (type == WStype_CONNECTED) {
     IPAddress ip = websockets.remoteIP(clientId);
     Serial.printf("[%u] Connected from %d.%d.%d.%d\n", clientId, ip[0], ip[1], ip[2], ip[3]);
-    // sendJson(clientId;);
   } else if (type == WStype_TEXT) {
-    // Convert the received payload to a String
     String receivedPayload((char *)payload, length);
-    // Log the received payload
     Serial.printf("Received from client [%u]: %s\n", clientId, receivedPayload.c_str());
-    // Create a JSON document to parse the received payload
-    DynamicJsonDocument message(1024);  // Adjust size as needed
+    DynamicJsonDocument message(1024);  
     DeserializationError error = deserializeJson(message, receivedPayload);
 
     if (error) {
       Serial.print(F("deserializeJson() failed: "));
       Serial.println(error.f_str());
-      return;  // Exit if JSON parsing fails
+      return;  
     }
     if (message.containsKey("path")) {
       sendJson(clientId, message["path"]);
@@ -160,12 +149,12 @@ bool parseDate(const char *dateStr) {
 String getTimestamps(FatFile &f, bool isCreation) {
   uint16_t date, time;
   if (isCreation ? f.getCreateDateTime(&date, &time) : f.getModifyDateTime(&date, &time)) {
-    char timestamp[20];  // Sufficient size for the formatted string
+    char timestamp[20];  
     formatTimestamp(timestamp, sizeof(timestamp), date, time);
     return String(timestamp);
   } else {
     Serial.println(isCreation ? "Failed to get creation date and time." : "Failed to get modified date and time.");
-    return "";  // Return an empty string on failure
+    return ""; 
   }
 }
 void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
@@ -177,80 +166,36 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       return;
     }
   }
-
-  // Write the received data to the file
   if (file) {
-    file.write(data, len);  // Write the data chunk
+    file.write(data, len);
   } else {
     Serial.println("Failed to open file for writing");
     request->send(500, "text/plain", "Failed to open file for writing");
   }
-
-  if (final) {  // If this is the last chunk
+  if (final) {  
     Serial.printf("UploadEnd: %s\n", filename.c_str());
-    file.close();
-
+    file.close(); 
     if (filename == "file_data.json") {
-      // Parse the JSON metadata
       DynamicJsonDocument doc(1024);
       DeserializationError error = deserializeJson(doc, String((char *)data, len));
 
       if (error) {
         Serial.println("Failed to parse JSON metadata");
-        Serial.println(error.c_str());  // Print the error message
-        return;                         // Exit if JSON parsing fails
+        Serial.println(error.c_str());  
+        return;
       }
 
       String tragetfile = doc["filename"];
       const char *creation_date = doc["creation_date"];
       const char *modified_date = doc["modified_date"];
-      const char *path = doc["path"];
       SdFile::dateTimeCallbackCancel();
 
-      // =============================================MOVING FILE TO DESTINATION=========================================
-      // Move the file to the new path
-      String newFilePath = String(path) + tragetfile + ".zip";  // Construct the new file path
-      if (SD.exists(newFilePath)) {
-        Serial.println("File already exists at the new location. Cannot move.");
-      } else {
-        // Open the source file for reading
-        File sourceFile = SD.open(("/" + tragetfile + ".zip").c_str(), FILE_READ);
-        if (!sourceFile) {
-          Serial.println("Failed to open source file for reading");
-          return;
-        }
-
-        // Open the destination file for writing
-        File destFile = SD.open(newFilePath.c_str(), FILE_WRITE);
-        if (!destFile) {
-          Serial.println("Failed to open destination file for writing");
-          sourceFile.close();
-          return;
-        }
-
-        // Copy the contents from the source file to the destination file
-        while (sourceFile.available()) {
-          destFile.write(sourceFile.read());
-        }
-
-        // Close both files
-        sourceFile.close();
-        destFile.close();
-
-        // Delete the original file
-        if (SD.remove(("/" + tragetfile + ".zip").c_str())) {
-          Serial.println("Original file deleted successfully!");
-        } else {
-          Serial.println("Error deleting original file!");
-        }
-      }
-      delay(1000);
       // ===================================================DATE SETTINNG=================================================
       if (!parseDate(creation_date)) {
         Serial.println("Failed to parse modified date");
         return;
       }
-      if (sdfile.open(newFilePath.c_str(), O_WRITE)) {
+      if (sdfile.open((tragetfile + ".zip").c_str(), O_WRITE)) {
         if (!sdfile.timestamp(T_CREATE, year, month, day, hour, minute, second)) {
           Serial.println("Failed to set creation date");
         }
@@ -258,12 +203,11 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       } else {
         Serial.println("Failed to reopen file for setting creation date");
       }
-      // Parse the date string
       if (!parseDate(modified_date)) {
         Serial.println("Failed to parse modified date");
         return;
       }
-      if (sdfile.open(newFilePath.c_str(), O_WRITE)) {
+      if (sdfile.open((tragetfile + ".zip").c_str(), O_WRITE)) {
         if (!sdfile.timestamp(T_WRITE, year, month, day, hour, minute, second)) {
           Serial.print("Failed to set modification date, error code: ");
         }
@@ -278,8 +222,6 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       Serial.println("tragetfile: " + String(tragetfile));
       Serial.println("creation_date: " + String(creation_date));
       Serial.println("modified_date: " + String(modified_date));
-      Serial.println("Path: " + String(path));
-
       request->send(200, "text/plain", "Upload Sucess");
     }
   }
@@ -301,6 +243,11 @@ String getMimeType(String filename) {
   else if (filename.endsWith(".zip")) return "application/zip";
   else return "application/octet-stream";  // Default for unknown types
 }
+
+
+// ==================================================SETUP & LOOP==========================================================
+
+
 void setup() {
   Serial.begin(115200);
   if (!LittleFS.begin()) {

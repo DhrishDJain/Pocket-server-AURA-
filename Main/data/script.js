@@ -1,5 +1,5 @@
 var connction = new WebSocket("ws://" + location.hostname + ":81/");
-let obj = {}; // Ensure obj is initialized
+let files_on_server = {};
 var dir = [];
 let icon = {};
 
@@ -11,7 +11,6 @@ connction.onopen = () => {
     })
   );
 };
-// window.addEventListener("load", files_in_storeage);
 fetch("/file_icons.json")
   .then((response) => {
     if (!response.ok) {
@@ -26,7 +25,6 @@ fetch("/file_icons.json")
     console.error("There was a problem with the fetch operation:", error);
   });
 
-// function files_in_storeage() {}
 connction.onmessage = (event) => {
   if (event.data == " " || event.data == undefined) {
     console.log("Received an empty or undefined data");
@@ -36,29 +34,26 @@ connction.onmessage = (event) => {
   const tempobj = JSON.parse(event.data);
   console.log("Received data from WebSocket:", tempobj);
 
-  // Check if the first key is "/"
   const firstKey = Object.keys(tempobj)[0];
   console.log("first_key", firstKey);
   if (firstKey === "/") {
-    // Update the entire object
-    obj = tempobj;
+    files_on_server = tempobj;
     list_dir_in_json();
   } else {
     const dirName = firstKey;
     const fileData = tempobj[firstKey];
 
-    // Check if fileData is defined before assigning
     if (fileData !== undefined) {
-      obj[dirName] = fileData;
+      files_on_server[dirName] = fileData;
     } else {
       console.warn(`No existing data for key: ${firstKey}`);
     }
     show_file_in_dir(firstKey);
   }
-  console.log("Updated object:", obj);
+  console.log("Updated object:", files_on_server);
 };
 function list_dir_in_json() {
-  for (var x in obj) {
+  for (var x in files_on_server) {
     dir.push(x);
   }
   show_file_in_dir(dir[0]);
@@ -86,9 +81,9 @@ function show_file_in_dir(dir) {
       .removeChild(document.querySelector(".item-container").lastChild);
   }
 
-  for (let i = 0; i < obj[dir].length; i++) {
+  for (let i = 0; i < files_on_server[dir].length; i++) {
     var newitem = item.cloneNode(true);
-    if (Object.keys(obj[dir][i])[0] == "folder") {
+    if (Object.keys(files_on_server[dir][i])[0] == "folder") {
       var newfolder = folder.cloneNode(true);
       var newfilepathpart = filepathpart.cloneNode(true);
       newfolder.classList.remove("hidden");
@@ -96,18 +91,18 @@ function show_file_in_dir(dir) {
         var sidemenufolder = document.querySelector(".sidefolder");
         var newsidemenufolder = sidemenufolder.cloneNode(true);
         newsidemenufolder.classList.remove("hidden");
-        newsidemenufolder.querySelector(".foldername").textContent = obj[dir][
+        newsidemenufolder.querySelector(".foldername").textContent = files_on_server[dir][
           i
         ]["folder"].replace(/.*\//, "");
         document.querySelector(".folder-list").appendChild(newsidemenufolder);
       }
       newfilepathpart.classList.remove("hidden");
-      newfolder.querySelector(".filename").textContent = obj[dir][i][
+      newfolder.querySelector(".filename").textContent = files_on_server[dir][i][
         "folder"
       ].replace(/.*\//, "");
       newfolder.addEventListener("click", function (event) {
         event.stopPropagation();
-        const fullFolderPath = obj[dir][i]["folder"].trim();
+        const fullFolderPath = files_on_server[dir][i]["folder"].trim();
         show_file_in_dir(fullFolderPath + "/");
         if (fullFolderPath.replace(/.*\//, "").length > 1) {
           newfilepathpart.children[1].children[0].textContent =
@@ -121,8 +116,8 @@ function show_file_in_dir(dir) {
       document.querySelector(".item-container").appendChild(newfolder);
     } else {
       newitem.classList.remove("hidden");
-      var fileExtension = obj[dir][i]["extension"];
-      const filename = obj[dir][i]["filename"];
+      var fileExtension = files_on_server[dir][i]["extension"];
+      const filename = files_on_server[dir][i]["filename"];
       newitem.querySelector(".filename").textContent = filename.includes("#")
         ? `${filename.split("#")[0]}.${fileExtension}`
         : filename;
@@ -130,7 +125,7 @@ function show_file_in_dir(dir) {
 
       // Extract the file extension
       newitem.querySelector(".dateofmodi").textContent =
-        obj[dir][i]["modified_date"];
+        files_on_server[dir][i]["modified_date"];
       const iconDiv = newitem.querySelector(".icon");
       if (icon[fileExtension] != undefined) {
         iconDiv.innerHTML = icon[fileExtension];
@@ -200,7 +195,7 @@ function show_file_in_dir(dir) {
   }
 }
 function file_size_conversion(i, dir) {
-  let bytes = obj[dir][i]["size"];
+  let bytes = files_on_server[dir][i]["size"];
   if (bytes < 0) {
     return "Invalid size";
   } else if (bytes === 0) {

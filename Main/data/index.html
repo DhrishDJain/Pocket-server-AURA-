@@ -145,7 +145,20 @@
                 const zipBlob = await zip.generateAsync({ type: "blob" });
                 const formData = new FormData();
                 const date = new Date();
+                let finalpath = "";
+                const elements = document.querySelectorAll(".filepathpart");
+                for (let i = 0; i < elements.length; i++) {
+                  finalpath += elements[i].children[1].textContent.replace(
+                    /\s/g,
+                    ""
+                  );
+                  finalpath += "/";
+                }
+                if (finalpath.length == 0) {
+                  finalpath = "/";
+                }
                 const filename =
+                  finalpath +
                   file.name.split(".")[0] +
                   "#" +
                   file.name.split(".").pop() +
@@ -154,9 +167,8 @@
                 formData.append("file", zipBlob, filename);
                 const jsonData = {
                   filename: filename,
-                  creation_date: formatDate(date),
-                  modified_date: formatDate(new Date(file.lastModified)),
-                  path: "/adr/",
+                  creation_date: await formatDate(date),
+                  modified_date: await formatDate(new Date(file.lastModified)),
                   extension: file.name.split(".").pop(),
                 };
                 formData.append(
@@ -181,7 +193,7 @@
                     connction.send(
                       JSON.stringify({
                         action: "sendJson",
-                        path: directoryPath,
+                        path: finalpath,
                       })
                     );
                     console.log("UPLOAD SUCCESS");
@@ -290,14 +302,15 @@
                     /\s/g,
                     ""
                   );
+                  finalpath += "/";
                   if (i == elements.length - 2) {
                     break;
                   }
-                  finalpath += "/";
                 }
                 if (finalpath.length == 0) {
                   finalpath = "/";
                 }
+                console.log(finalpath);
                 show_file_in_dir(finalpath);
                 if (document.querySelector(".path").children.length > 2) {
                   document
