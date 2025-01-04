@@ -113,18 +113,134 @@ aside {
 }
 
 .upload {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  column-gap: 0.45rem;
   position: fixed;
   bottom: 4vh;
-  right: 25px;
-  padding: 10px;
-  z-index: 10;
-  border-radius: 15%;
-  background: var(--accent);
+  z-index: 999;
+  right: 1.25rem;
+  left: 1.25rem;
+  color: #000 !important;
+}
+
+.uploadStatus {
+  display: flex;
+  flex-direction: column;
+  clip-path: polygon(0 0, 93% 0, 100% 19%, 100% 100%, 7% 100%, 0 82%);
+  position: relative;
+  background-color: var(--accent);
+  padding: 0.5rem;
+  /* color: #000; */
+  width: 22rem;
+  box-sizing: border-box;
+}
+.uploadingfile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.uploading-text {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.uploading-text span {
+  font-weight: bolder;
+  opacity: 0;
+  display: inline-block;
+  animation: appear 1s forwards infinite;
+}
+
+.uploading-text span:nth-child(1) {
+  animation-delay: 0.25s;
+}
+
+.uploading-text span:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.uploading-text span:nth-child(3) {
+  animation-delay: 0.75s;
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reset {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  99.9% {
+    opacity: 0;
+  }
+}
+
+.progress-info {
+  font-size: 0.75rem;
+  font-weight: 500;
+  width: max-content;
+  letter-spacing: 0px;
+}
+.sizeandprogress {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: fit-content;
+  column-gap: 0.5rem;
+  justify-content: flex-end;
+}
+.statandprog {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  width: 70%;
+}
+.sizeandprogress-inner {
+  display: flex;
+  /* justify-content: space-between; */
+  min-height: 1rem;
+  column-gap: 1.22%;
+  border: 1px solid #000;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+}
+.bar {
+  min-width: 9%;
+  background-color: #000;
+}
+
+.bar:nth-child(1) {
+  /* min-width: 7%; */
+  clip-path: polygon(0 0, 100% 0%, 80% 100%, 0% 100%) !important;
+}
+.bar:nth-child(n + 1) {
+  clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+}
+.bar:last-child {
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+}
+.uploadPercentage {
+  margin-bottom: -16px;
+  font-size: 1.5rem;
+  color: #000;
 }
 .addbtn {
   display: flex;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
+  height: 4rem;
+  width: 4rem;
+  padding: 0.2rem;
+  z-index: 10;
+  border-radius: 15%;
+  background: var(--accent);
 }
 .filepath {
   display: flex;
@@ -289,6 +405,7 @@ aside.open {
   display: flex;
   row-gap: 0.5rem;
   flex-direction: column;
+  padding-bottom: 16vh;
   color: white;
   height: 73vh;
   overflow: scroll;
@@ -439,6 +556,26 @@ aside.open {
   .main-content {
     margin: 1rem;
     padding-bottom: 0 !important;
+  }
+  .upload {
+    column-gap: 0.75rem;
+    right: 1rem;
+  }
+  .uploadStatus {
+    width: 82%;
+  }
+  .uploadname{
+    margin-right: 4px !important;
+  }
+  .uploading-text {
+    font-size: 1rem;
+  }
+
+  .statandprog {
+    width: 70%;
+  }
+  .uploadPercentage{
+    font-size: large;
   }
   .filepathpart {
     font-size: 1.75rem;

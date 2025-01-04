@@ -47,13 +47,13 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
   } else if (type == WStype_TEXT) {
     String receivedPayload((char *)payload, length);
     Serial.printf("Received from client [%u]: %s\n", clientId, receivedPayload.c_str());
-    DynamicJsonDocument message(1024);  
+    DynamicJsonDocument message(1024);
     DeserializationError error = deserializeJson(message, receivedPayload);
 
     if (error) {
       Serial.print(F("deserializeJson() failed: "));
       Serial.println(error.f_str());
-      return;  
+      return;
     }
     if (message.containsKey("path")) {
       sendJson(clientId, message["path"]);
@@ -149,12 +149,12 @@ bool parseDate(const char *dateStr) {
 String getTimestamps(FatFile &f, bool isCreation) {
   uint16_t date, time;
   if (isCreation ? f.getCreateDateTime(&date, &time) : f.getModifyDateTime(&date, &time)) {
-    char timestamp[20];  
+    char timestamp[20];
     formatTimestamp(timestamp, sizeof(timestamp), date, time);
     return String(timestamp);
   } else {
     Serial.println(isCreation ? "Failed to get creation date and time." : "Failed to get modified date and time.");
-    return ""; 
+    return "";
   }
 }
 void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
@@ -172,16 +172,16 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
     Serial.println("Failed to open file for writing");
     request->send(500, "text/plain", "Failed to open file for writing");
   }
-  if (final) {  
+  if (final) {
     Serial.printf("UploadEnd: %s\n", filename.c_str());
-    file.close(); 
+    file.close();
     if (filename == "file_data.json") {
       DynamicJsonDocument doc(1024);
       DeserializationError error = deserializeJson(doc, String((char *)data, len));
 
       if (error) {
         Serial.println("Failed to parse JSON metadata");
-        Serial.println(error.c_str());  
+        Serial.println(error.c_str());
         return;
       }
 
@@ -223,6 +223,9 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       Serial.println("creation_date: " + String(creation_date));
       Serial.println("modified_date: " + String(modified_date));
       request->send(200, "text/plain", "Upload Sucess");
+      if(SD.exists("/file_data.json.zip")){
+        SD.remove("/file_data.json.zip");
+      }
     }
   }
 }
@@ -275,8 +278,8 @@ void setup() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html", false);
   });
-  server.on("/readstorage", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "SD card read");
+  server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/test.html", "text/html", false);
   });
   server.serveStatic("/", LittleFS, "/");
   server.on(

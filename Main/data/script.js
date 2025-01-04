@@ -91,15 +91,14 @@ function show_file_in_dir(dir) {
         var sidemenufolder = document.querySelector(".sidefolder");
         var newsidemenufolder = sidemenufolder.cloneNode(true);
         newsidemenufolder.classList.remove("hidden");
-        newsidemenufolder.querySelector(".foldername").textContent = files_on_server[dir][
-          i
-        ]["folder"].replace(/.*\//, "");
+        newsidemenufolder.querySelector(".foldername").textContent =
+          files_on_server[dir][i]["folder"].replace(/.*\//, "");
         document.querySelector(".folder-list").appendChild(newsidemenufolder);
       }
       newfilepathpart.classList.remove("hidden");
-      newfolder.querySelector(".filename").textContent = files_on_server[dir][i][
-        "folder"
-      ].replace(/.*\//, "");
+      newfolder.querySelector(".filename").textContent = files_on_server[dir][
+        i
+      ]["folder"].replace(/.*\//, "");
       newfolder.addEventListener("click", function (event) {
         event.stopPropagation();
         const fullFolderPath = files_on_server[dir][i]["folder"].trim();
@@ -121,7 +120,9 @@ function show_file_in_dir(dir) {
       newitem.querySelector(".filename").textContent = filename.includes("#")
         ? `${filename.split("#")[0]}.${fileExtension}`
         : filename;
-      newitem.querySelector(".size").textContent = file_size_conversion(i, dir);
+      newitem.querySelector(".size").textContent = file_size_conversion(
+        files_on_server[dir][i]["size"]
+      );
 
       // Extract the file extension
       newitem.querySelector(".dateofmodi").textContent =
@@ -194,8 +195,7 @@ function show_file_in_dir(dir) {
     });
   }
 }
-function file_size_conversion(i, dir) {
-  let bytes = files_on_server[dir][i]["size"];
+function file_size_conversion(bytes) {
   if (bytes < 0) {
     return "Invalid size";
   } else if (bytes === 0) {

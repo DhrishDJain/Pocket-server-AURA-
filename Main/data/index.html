@@ -6,7 +6,7 @@
 
     <title>AURA_DB</title>
 
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style2.css" />
     <script src="/script.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
@@ -95,12 +95,59 @@
             />
             <button type="submit" id="uploadButton">Upload and Compress</button>
           </form>
+          <!-- Upload Status Element -->
+          <div class="uploadStatus hidden">
+            <div class="uploadingfile">
+              <div class="uploading-text">
+                UPLOADING
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+              </div>
+              <div
+                style="
+                  font-size: smaller;
+                  margin-right: 12px;
+                  max-width: 40%;
+                  height: min-content;
+                  color: black;
+                "
+                class="uploadname filename noscroll"
+              >
+                Long File Name.exten
+              </div>
+            </div>
+            <div class="sizeandprogress">
+              <div class="statandprog">
+                <div class="progress-info">
+                  <span class="chunkedsend">000.00KB</span>
+                  <span>/</span>
+                  <span class="totalchunk">000.00KB</span>
+                  <span>--</span>
+                  <span class="speed">000.00kb/s</span>
+                </div>
+                <div class="sizeandprogress-inner">
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                </div>
+              </div>
+              <div class="uploadPercentage">100%</div>
+            </div>
+          </div>
           <div
             class="addbtn"
             onclick="document.getElementById('fileholder').click()"
           >
             <svg
-              width="2rem"
+              width="3rem"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="6 6 12 12"
@@ -113,6 +160,7 @@
               ></path>
             </svg>
           </div>
+
           <script>
             function formatDate(date) {
               const day = String(date.getDate()).padStart(2, "0");
@@ -178,18 +226,61 @@
                   }),
                   "file_data.json"
                 );
+                document
+                  .querySelector(".uploadStatus")
+                  .classList.remove("hidden");
 
-                fetch("/handleupload", {
-                  method: "POST",
-                  body: formData,
-                })
-                  .then((response) => {
-                    if (!response.ok) {
-                      throw new Error("Network response was not ok");
-                    }
-                  })
-                  .then(() => {
-                    const directoryPath = jsonData.path;
+                // Create XMLHttpRequest for upload
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/handleupload", true);
+                const bars = document.querySelectorAll(".bar");
+                bars.forEach((bar) => {
+                  bar.classList.add("hidden");
+                });
+                document.querySelector(".uploadname").innerHTML = file.name;
+                document.querySelector(".totalchunk").innerHTML =
+                  file_size_conversion(zipBlob.size);
+                // Variables to calculate upload speed
+                let startTime = Date.now();
+                let uploadedBytes = 0;
+
+                xhr.upload.onprogress = function (event) {
+                  if (event.lengthComputable) {
+                    const percentage = Math.round(
+                      (event.loaded / event.total) * 100
+                    );
+                    document.querySelector(".chunkedsend").innerHTML =
+                      file_size_conversion(event.loaded);
+                    document.querySelector(
+                      ".uploadPercentage"
+                    ).innerText = `${percentage}%`;
+                    bars.forEach((bar, index) => {
+                      if (index < percentage / 10 && index != 9) {
+                        bar.classList.remove("hidden");
+                      }
+                    });
+                    // Calculate upload speed
+                    const currentTime = Date.now();
+                    const timeElapsed = (currentTime - startTime) / 1000; // in seconds
+                    uploadedBytes = event.loaded; // total uploaded bytes
+                    const speed = uploadedBytes / timeElapsed; // bytes per second
+                    const speedInKB = (speed / 1024).toFixed(2); // convert to KB/s
+                    document.querySelector(
+                      ".speed"
+                    ).innerText = `${speedInKB} KB/s`;
+                  }
+                };
+
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                    bars[9].classList.remove("hidden");
+                    document.querySelector(
+                      ".uploadPercentage"
+                    ).innerText = `100%`;
+                    document.querySelector(".chunkedsend").innerHTML =
+                      file_size_conversion(zipBlob.size);
+                    document.querySelector(".speed").innerText = `0KB/s`;
+
                     connction.send(
                       JSON.stringify({
                         action: "sendJson",
@@ -197,14 +288,47 @@
                       })
                     );
                     console.log("UPLOAD SUCCESS");
-                  })
-                  .catch((error) => {
-                    console.error(
-                      "There was a problem with the fetch operation:",
-                      error
-                    );
-                  });
+                  } else {
+                    console.error("Upload failed with status:", xhr.status);
+                    alert("Upload failed. Please try again.");
+                  }
+                };
+
+                xhr.onerror = function () {
+                  console.error("There was a problem with the upload.");
+                  alert(
+                    "Upload failed. Please check your connection and try again."
+                  );
+                };
+
+                xhr.send(formData);
               });
+            //   fetch("/handleupload", {
+            //     method: "POST",
+            //     body: formData,
+            //   })
+            //     .then((response) => {
+            //       if (!response.ok) {
+            //         throw new Error("Network response was not ok");
+            //       }
+            //     })
+            //     .then(() => {
+            //       const directoryPath = jsonData.path;
+            //       connction.send(
+            //         JSON.stringify({
+            //           action: "sendJson",
+            //           path: finalpath,
+            //         })
+            //       );
+            //       console.log("UPLOAD SUCCESS");
+            //     })
+            //     .catch((error) => {
+            //       console.error(
+            //         "There was a problem with the fetch operation:",
+            //         error
+            //       );
+            //     });
+            // });
           </script>
         </div>
         <div class="filepath">
