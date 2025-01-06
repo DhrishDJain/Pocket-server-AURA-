@@ -498,21 +498,10 @@
                 </svg>
               </button>
               <div class="dropdown-content">
+                <span class="onbases" onclick="sortItems(this)">Name</span>
                 <span class="onbases" onclick="sortItems(this)">Size</span>
                 <span class="onbases" onclick="sortItems(this)">Date</span>
                 <span class="onbases" onclick="sortItems(this)">File Type</span>
-                <span
-                  style="
-                    color: #9494a4;
-                    font-weight: bolder;
-                    padding: 0.3rem 1rem;
-                  "
-                  >Order</span
-                >
-                <span class="order active" onclick="sortItems(this)"
-                  >High to Low</span
-                >
-                <span class="order" onclick="sortItems(this)">Low to High</span>
               </div>
             </div>
 
@@ -537,16 +526,14 @@
             </script>
           </div>
         </div>
-
+        <div class="headers">
+          <span class="nameheader header" onclick="sortItems(this)">Name</span>
+          <span class="dateheader header" onclick="sortItems(this)">Date</span>
+          <span class="typeheader header" onclick="sortItems(this)">Type</span>
+          <span class="sizeheader header" onclick="sortItems(this)">Size</span>
+        </div>
         <div class="item-container noscroll">
-          <div
-            class="card hidden"
-            data-filename="Cab.pdf"
-            data-size="1GB"
-            data-type="b"
-            data-date="09-09-2024"
-          >
-            <!-- <div style="grid-column: 1" class="fileid"> -->
+          <div class="card hidden">
             <div style="margin: 0 auto" class="icon">
               <svg
                 height="800px"
@@ -602,11 +589,11 @@
             <span
               style="grid-column: 2; min-width: 95%"
               class="filename noscroll"
-              >Cab.b</span
+              >A</span
             >
-            <span class="dateofmodi">09-09-2024 00:00</span>
-            <!-- </div> -->
-            <span style="grid-column: 4" class="filetype">exten File</span>
+            <span class="dateofmodi">29-09-2024 00:00</span>
+
+            <span style="grid-column: 4" class="filetype">a Type</span>
             <span
               style="grid-column: 5; justify-self: end; padding-right: 0.5rem"
               class="size"
@@ -649,11 +636,9 @@
                 />
               </svg>
             </div>
-            <span style="grid-column: 2" class="filename noscroll"
-              >trwrefdsdsdsddddddddddddsddfadfdfdf</span
-            >
-            <span class="dateofmodi">09-09-2024 00:00</span>
-            <span style="grid-column: 4" class="filetype">Folder</span>
+            <span style="grid-column: 2" class="filename noscroll">c</span>
+            <span class="dateofmodi">12-09-2024 00:00</span>
+            <span style="grid-column: 4" class="filetype">c</span>
           </div>
         </div>
       </div>
@@ -664,52 +649,69 @@
           const items = Array.from(container.children);
           var onbases = document.querySelectorAll(".onbases");
           var order = document.querySelectorAll(".order");
-
-          if (element.classList.contains("onbases")) {
-            const activeOrder = Array.from(order).find((ord) =>
-              ord.classList.contains("active")
-            );
-            if (!activeOrder) return;
-          }
-
-          if (
-            element.classList.contains("order") &&
-            element.textContent.trim() == "Low to High"
-          ) {
+          var headers = document.querySelectorAll(".header");
+          element.classList.toggle("isAscending");
+          if (element.classList.contains("isAscending")) {
             isAscending = true;
-          } else if (
-            element.classList.contains("order") &&
-            element.textContent.trim() == "High to Low"
-          ) {
+          } else {
             isAscending = false;
           }
-          // set active
-          if (element.classList.contains("onbases")) {
-            onbases.forEach((onbases) => onbases.classList.remove("active"));
-          } else {
-            order.forEach((order) => order.classList.remove("active"));
-          }
+          headers.forEach((header) => {
+            if (header != element) {
+              header.classList.remove("isAscending");
+            }
+          });
+          onbases.forEach((onbase) => {
+            onbase.classList.remove("active");
+          });
           element.classList.add("active");
-
-          const activeOnbases = Array.from(onbases).find((onbase) =>
-            onbase.classList.contains("active")
-          );
 
           items.sort((a, b) => {
             let comparison = 0;
-            switch (activeOnbases.textContent) {
+            switch (element.textContent) {
               case "Date":
-                const dateA = parseDate(a.dataset.date);
-                const dateB = parseDate(b.dataset.date);
-                comparison = dateA - dateB;
+                const dateA = parseDate(
+                  a.querySelector(".dateofmodi").textContent
+                );
+                const dateB = parseDate(
+                  b.querySelector(".dateofmodi").textContent
+                );
+                comparison = dateA.getTime() - dateB.getTime();
                 break;
               case "Size":
-                const sizeA = parseInt(a.dataset.size) || 0;
-                const sizeB = parseInt(b.dataset.size) || 0;
-                comparison = sizeA - sizeB;
+                if (a.classList.contains("folder")) {
+                  comparison = -1;
+                } else if (b.classList.contains("folder")) {
+                  comparison = 1;
+                } else {
+                  const sizeA =
+                    parseInt(a.querySelector(".size").textContent) || 0;
+                  const sizeB =
+                    parseInt(b.querySelector(".size").textContent) || 0;
+                  comparison = sizeA - sizeB;
+                }
+                console.log(
+                  a.querySelector(".size"),
+                  b.querySelector(".size"),
+                  comparison
+                );
+                break;
+              case "Name":
+                comparison = a
+                  .querySelector(".filename")
+                  .textContent.toLowerCase()
+                  .localeCompare(
+                    b.querySelector(".filename").textContent.toLowerCase()
+                  );
                 break;
               case "File Type":
-                comparison = -a.dataset.type.localeCompare(b.dataset.type);
+              case "Type":
+                comparison = a
+                  .querySelector(".filetype")
+                  .textContent.toLowerCase()
+                  .localeCompare(
+                    b.querySelector(".filetype").textContent.toLowerCase()
+                  );
                 break;
               default:
                 break;
@@ -724,8 +726,10 @@
         }
 
         function parseDate(dateString) {
-          const [day, month, year] = dateString.split("-").map(Number);
-          return new Date(year, month - 1, day);
+          const [datePart, timePart] = dateString.split(" ");
+          const [day, month, year] = datePart.split("-").map(Number);
+          const [hours, minutes] = timePart.split(":").map(Number);
+          return new Date(year, month - 1, day, hours, minutes);
         }
       </script>
     </main>
