@@ -7,6 +7,7 @@ connction.onopen = () => {
   console.log("WebSocket connection established");
   connction.send(
     JSON.stringify({
+      action: "sendJson",
       path: "/",
     })
   );

@@ -7,7 +7,7 @@
     <title>AURA_DB</title>
 
     <link rel="stylesheet" href="style2.css" />
-    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="script11.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -228,7 +228,7 @@
                   .classList.remove("hidden");
                 document.querySelector(".cancel").classList.remove("hidden");
                 document.querySelector(".uploading").classList.remove("hidden");
-                
+
                 // zipping file
                 const zip = new JSZip();
                 zip.file(file.name, file, {
@@ -238,9 +238,10 @@
                 const zipBlob = await zip.generateAsync({ type: "blob" });
                 const formData = new FormData();
                 const date = new Date();
-                let finalpath = "";
+
                 const elements = document.querySelectorAll(".filepathpart");
 
+                let finalpath = "";
                 // find file path
                 for (let i = 0; i < elements.length; i++) {
                   finalpath += elements[i].children[1].textContent.replace(
@@ -269,6 +270,7 @@
                   modified_date: await formatDate(new Date(file.lastModified)),
                   extension: file.name.split(".").pop(),
                 };
+                console.log(jsonData);
                 formData.append(
                   "metadata",
                   new Blob([JSON.stringify(jsonData)], {
@@ -379,8 +381,16 @@
 
                 if (xhr) {
                   xhr.abort(); // Abort the upload
+
                   console.log(currentFilename);
-                  deletefile(currentFilename);
+                  connction.send(
+                    JSON.stringify({
+                      action: "abort_upload",
+                      path: currentFilename + ".zip",
+                    })
+                  );
+                  // }
+                  // }, 2000);
 
                   document.querySelector(".uploading").classList.add("hidden");
                   document

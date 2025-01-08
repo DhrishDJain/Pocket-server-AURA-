@@ -32,7 +32,7 @@ uint8_t day = 0;
 uint8_t hour = 0;
 uint8_t minute = 0;
 uint8_t second = 0;
-
+bool abort_upload = false;
 // ==================================================HANDEL WEBSOCKET=========================================================
 
 void sendtxt(String txt, uint8_t clientId) {
@@ -54,8 +54,25 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
       Serial.println(error.f_str());
       return;
     }
-    if (message.containsKey("path")) {
+    if (message.containsKey("path") && message["action"] == "sendJson") {
       sendJson(clientId, message["path"]);
+    }
+    String mes;
+    if (message["action"] == "abort_upload") {
+      Serial.println();
+      Serial.println("====================Requested Delete=========================");
+      Serial.println();
+      file.close();
+      String path = message["path"];
+      if (SD.exists(path)) {
+        if (SD.remove(path)) {
+          Serial.printf("Deleting %s status: SUCCESS\n", path);
+        } else {
+          Serial.printf("Deleting %s status: FAILED\n", path);
+        }
+      } else {
+        Serial.printf("File %s does not exist\n", path);
+      }
     }
   }
 }
@@ -158,6 +175,9 @@ String getTimestamps(FatFile &f, bool isCreation) {
 }
 void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
   if (index == 0) {
+    Serial.println();
+    Serial.println("====================Requested Upload=========================");
+    Serial.println();
     Serial.printf("UploadStart: %s\n", filename.c_str());
     file = SD.open("/" + filename + ".zip", FILE_WRITE);
     if (!file) {
@@ -169,7 +189,7 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
     file.write(data, len);
   } else {
     Serial.println("Failed to open file for writing");
-    request->send(500, "text/plain", "Failed to open file for writing");
+    return;
   }
   if (final) {
     Serial.printf("UploadEnd: %s\n", filename.c_str());
@@ -177,7 +197,6 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
     if (filename == "file_data.json") {
       DynamicJsonDocument doc(1024);
       DeserializationError error = deserializeJson(doc, String((char *)data, len));
-
       if (error) {
         Serial.println("Failed to parse JSON metadata");
         Serial.println(error.c_str());
@@ -284,9 +303,6 @@ void setup() {
   server.on(
     "/handleupload", HTTP_POST, [](AsyncWebServerRequest *request) {},
     [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
-      Serial.println();
-      Serial.println("====================Requested Upload=========================");
-      Serial.println();
       handleFileUpload(request, filename, index, data, len, final);
     });
   server.on(

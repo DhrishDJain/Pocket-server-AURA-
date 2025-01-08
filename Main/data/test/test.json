@@ -1,46 +1,25 @@
 {
-  "/Pocket_server/Main/data/svg/": [
+  "/": [
     {
-      "filename": "docx.svg",
-      "size": 18672,
-      "extension": "svg",
-      "creation_date": "02-01-2025 23:57",
-      "modified_date": "30-12-2024 14:34"
+      "filename": "original-e040589f813d5657ecce05f433675692#png#.zip",
+      "size": 271451,
+      "extension": "png",
+      "creation_date": "08-01-2025 13:59",
+      "modified_date": "19-07-2024 16:26"
     },
     {
-      "filename": "pdf.svg",
-      "size": 2228,
-      "extension": "svg",
-      "creation_date": "02-01-2025 23:57",
-      "modified_date": "30-12-2024 14:47"
+      "filename": "Screenshot 2024-07-30 142333#png#.zip",
+      "size": 245032,
+      "extension": "png",
+      "creation_date": "08-01-2025 14:11",
+      "modified_date": "30-07-2024 14:24"
     },
     {
-      "filename": "unknown file.svg",
-      "size": 994,
-      "extension": "svg",
-      "creation_date": "02-01-2025 23:57",
-      "modified_date": "30-12-2024 21:30"
-    },
-    {
-      "filename": "xlsx.svg",
-      "size": 21020,
-      "extension": "svg",
-      "creation_date": "02-01-2025 23:57",
-      "modified_date": "30-12-2024 14:47"
-    },
-    {
-      "filename": "zip.svg",
-      "size": 24616,
-      "extension": "svg",
-      "creation_date": "02-01-2025 23:57",
-      "modified_date": "30-12-2024 14:46"
-    },
-    {
-      "filename": "CES_Activity_Report_Tech#docx#.zip",
-      "size": 2361159,
-      "extension": "docx",
-      "creation_date": "03-01-2025 19:45",
-      "modified_date": "27-11-2024 08:51"
+      "filename": "7b8918207722071#png#.zip",
+      "size": 348657,
+      "extension": "png",
+      "creation_date": "08-01-2025 14:04",
+      "modified_date": "03-11-2024 14:43"
     }
   ]
 }
