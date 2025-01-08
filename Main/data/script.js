@@ -35,7 +35,6 @@ connction.onmessage = (event) => {
   console.log("Received data from WebSocket:", tempobj);
 
   const firstKey = Object.keys(tempobj)[0];
-  console.log("first_key", firstKey);
   if (firstKey === "/") {
     files_on_server = tempobj;
     list_dir_in_json();

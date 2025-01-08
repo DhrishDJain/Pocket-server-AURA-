@@ -39,7 +39,6 @@ void sendtxt(String txt, uint8_t clientId) {
   Serial.println(txt);
   websockets.sendTXT(clientId, txt);
 }
-
 void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t length) {
   if (type == WStype_CONNECTED) {
     IPAddress ip = websockets.remoteIP(clientId);
@@ -223,7 +222,7 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       Serial.println("creation_date: " + String(creation_date));
       Serial.println("modified_date: " + String(modified_date));
       request->send(200, "text/plain", "Upload Sucess");
-      if(SD.exists("/file_data.json.zip")){
+      if (SD.exists("/file_data.json.zip")) {
         SD.remove("/file_data.json.zip");
       }
     }
@@ -285,7 +284,37 @@ void setup() {
   server.on(
     "/handleupload", HTTP_POST, [](AsyncWebServerRequest *request) {},
     [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+      Serial.println();
+      Serial.println("====================Requested Upload=========================");
+      Serial.println();
       handleFileUpload(request, filename, index, data, len, final);
+    });
+  server.on(
+    "/delete", HTTP_POST, [](AsyncWebServerRequest *request) {  // Acknowledge receipt
+    },
+    NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+      Serial.println();
+      Serial.println("====================Requested Delete=========================");
+      Serial.println();
+      DynamicJsonDocument del(1024);  // Use a more descriptive name
+      DeserializationError error = deserializeJson(del, data);
+      if (error) {
+        Serial.println("Failed to parse JSON");
+        request->send(400, "application/json", "{\"status\":\"error\", \"message\":\"Invalid JSON\"}");
+        return;  // Exit if JSON parsing fails
+      }
+      const char *path = del["path"];  // Get the path from the JSON
+      if (SD.exists(path)) {
+        if (SD.remove(path)) {
+          Serial.printf("Deleting %s status: SUCCESS\n", path);
+          request->send(200, "application/json", "{\"status\":\"success\", \"message\":\"File deleted\"}");
+        } else {
+          Serial.printf("Deleting %s status: FAILED\n", path);
+          request->send(500, "application/json", "{\"status\":\"error\", \"message\":\"File deletion failed\"}");
+        }
+      } else {
+        Serial.printf("File %s does not exist\n", path);
+      }
     });
   server.begin();
   websockets.begin();

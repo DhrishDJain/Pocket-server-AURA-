@@ -125,6 +125,12 @@ aside {
   color: #000 !important;
 }
 
+.cancel {
+  margin-bottom: auto;
+  background: var(--accent);
+  padding: 0.1rem 0.35rem;
+  height: 1.2rem;
+}
 .uploadStatus {
   display: flex;
   flex-direction: column;
@@ -134,7 +140,13 @@ aside {
   padding: 0.5rem;
   /* color: #000; */
   width: 22rem;
+  min-height: 4.25rem;
   box-sizing: border-box;
+}
+.cancelindication{
+  font-size: 2rem;
+  font-weight: 500;
+  margin: auto;
 }
 .uploadingfile {
   display: flex;
@@ -200,6 +212,7 @@ aside {
   flex-direction: column;
   align-items: end;
   width: 70%;
+  min-width: 70%;
 }
 .sizeandprogress-inner {
   display: flex;
