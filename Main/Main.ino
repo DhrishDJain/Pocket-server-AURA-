@@ -1,13 +1,12 @@
 
-#include <ESPAsyncWebServer.h>
+#include <ESPAsyncWebServer.h>  //V3.6.0
 #include <WebSocketsServer.h>
-#include <SD.h>
+#include <SD.h>  //V1.3.0
 #include <SPI.h>
-#include <AsyncTCP.h>
+#include <AsyncTCP.h>  //V1.1.4
 #include "LittleFS.h"
-#include <ArduinoJson.h>
-#include "SdFat.h"
-#include "sdios.h"
+#include <ArduinoJson.h>  //V7.3.0
+#include "SdFat.h"        //V2.2.2
 #include <time.h>
 
 SdFat sd;
@@ -57,8 +56,7 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
     if (message.containsKey("path") && message["action"] == "sendJson") {
       sendJson(clientId, message["path"]);
     }
-    String mes;
-    if (message["action"] == "abort_upload") {
+    if (message["action"] == "abort_upload" || message["action"] == "Delete") {
       Serial.println();
       Serial.println("====================Requested Delete=========================");
       Serial.println();
@@ -67,6 +65,7 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
       if (SD.exists(path)) {
         if (SD.remove(path)) {
           Serial.printf("Deleting %s status: SUCCESS\n", path);
+          sendJson(clientId, message["folder_path"]);
         } else {
           Serial.printf("Deleting %s status: FAILED\n", path);
         }
@@ -125,9 +124,11 @@ void buildJson(const String &path, JsonDocument &jsonDoc) {
             fileInfo["extension"] = extension;
           }
         }
+        // Serial.print("Attempting to open file: ");
+        // Serial.println(file.path());
         fafile.close();
         if (!fafile.open(file.path(), O_READ)) {
-          error("open file in buil json funct failed");
+          error("open file in buildejson funct failed");
         }
         fileInfo["creation_date"] = getTimestamps(fafile, true);
         fileInfo["modified_date"] = getTimestamps(fafile, false);
@@ -172,6 +173,7 @@ String getTimestamps(FatFile &f, bool isCreation) {
     Serial.println(isCreation ? "Failed to get creation date and time." : "Failed to get modified date and time.");
     return "";
   }
+  f.close();
 }
 void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
   if (index == 0) {
