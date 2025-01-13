@@ -20,7 +20,8 @@ uint8_t second = 0;
 void printTimestamps(SdFile &f) {
   Serial.print("Creation: ");
   f.printCreateDateTime(&Serial);
-  Serial.println("Modify: ");
+  Serial.println();
+  Serial.print("Modify: ");
   f.printModifyDateTime(&Serial);
   Serial.println();
 }
@@ -53,7 +54,7 @@ void setup() {
     sd.initErrorHalt(&Serial);
   }
 
-  String filename = "asap5#png#";  // Corrected filename
+  String filename = "css#svg#";  // Corrected filename
   const char *creation_date = "05-01-2025 20:34:55";
   const char *modified_date = "06-10-2024 15:39:58";  // Ensure this is a valid date
   SdFile::dateTimeCallbackCancel();
@@ -71,7 +72,6 @@ void setup() {
     Serial.println("Failed to reopen file for setting creation date");
   }
   // Print the modified_date string for debugging
-  Serial.println(modified_date);
 
   // Parse the date string
   if (!parseDate(modified_date)) {

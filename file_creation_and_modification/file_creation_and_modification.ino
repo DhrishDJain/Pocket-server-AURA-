@@ -95,6 +95,5 @@ void setup(void) {
   fafile.close();
   Serial.println("\nDone\n");
 }
-}
 
 void loop() {}

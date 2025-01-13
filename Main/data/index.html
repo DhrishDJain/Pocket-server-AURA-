@@ -185,6 +185,7 @@
           <script>
             let currentFilename = "";
             let xhr;
+            let finalpath = "";
             function deletefile(path) {
               const cancelRequest = new XMLHttpRequest();
               cancelRequest.open("POST", "/delete", true);
@@ -241,7 +242,7 @@
 
                 const elements = document.querySelectorAll(".filepathpart");
 
-                let finalpath = "";
+                finalpath = "";
                 // find file path
                 for (let i = 0; i < elements.length; i++) {
                   finalpath += elements[i].children[1].textContent.replace(
@@ -386,6 +387,7 @@
                   connction.send(
                     JSON.stringify({
                       action: "abort_upload",
+                      folder_path: finalpath,
                       path: currentFilename + ".zip",
                     })
                   );
@@ -667,7 +669,7 @@
             </div>
             <span
               style="grid-column: 2; min-width: 95%"
-              class="filename noscroll  "
+              class="filename noscroll"
               >File name.exten</span
             >
             <span class="dateofmodi">00-00-0000 00:00</span>
@@ -695,12 +697,9 @@
                   />
                 </svg>
               </button>
-              
+
               <div class="option-content hidden">
-                <span
-                  onclick="file_operation(this)"
-                  class="option"
-                >
+                <span onclick="file_operation(this)" class="option">
                   <svg
                     width="22"
                     height="16"
@@ -715,10 +714,7 @@
                   </svg>
                   Download
                 </span>
-                <span
-                  onclick="file_operation(this)"
-                  class="option"
-                >
+                <span onclick="file_operation(this)" class="option">
                   <svg
                     width="22"
                     height="16"
@@ -733,10 +729,7 @@
                   </svg>
                   Move
                 </span>
-                <span
-                  onclick="file_operation(this)"
-                  class="option"
-                >
+                <span onclick="file_operation(this)" class="option">
                   <svg
                     width="20"
                     height="20"
@@ -776,10 +769,7 @@
                   </svg>
                   Rename
                 </span>
-                <span
-                  onclick="file_operation(this)"
-                  class="option"
-                >
+                <span onclick="file_operation(this)" class="option">
                   <svg
                     width="20"
                     height="19"
@@ -794,10 +784,7 @@
                   </svg>
                   Add to starred
                 </span>
-                <span
-                  onclick="file_operation(this)"
-                  class="option"
-                >
+                <span onclick="file_operation(this)" class="option">
                   <svg
                     width="20"
                     height="20"
@@ -858,9 +845,6 @@
             <span style="grid-column: 4" class="filetype">Folder</span>
           </div>
         </div>
-        <script>
-   
-        </script>
       </div>
       <script>
         var isAscending = false;

@@ -53,6 +53,7 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
       Serial.println(error.f_str());
       return;
     }
+    String path = message["path"];
     if (message.containsKey("path") && message["action"] == "sendJson") {
       sendJson(clientId, message["path"]);
     }
@@ -61,7 +62,6 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
       Serial.println("====================Requested Delete=========================");
       Serial.println();
       file.close();
-      String path = message["path"];
       if (SD.exists(path)) {
         if (SD.remove(path)) {
           Serial.printf("Deleting %s status: SUCCESS\n", path);
@@ -71,6 +71,16 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
         }
       } else {
         Serial.printf("File %s does not exist\n", path);
+      }
+    } else if (message["action"] == "Rename") {
+      String folder_path = message["folder_path"];
+      String file_action_parameter = message["file_action_parameter"];
+      Serial.printf("Renaming file %s to %s\n", path, file_action_parameter);
+      if (SD.rename(path, file_action_parameter)) {
+        Serial.println("File renamed");
+        sendJson(clientId, folder_path);
+      } else {
+        Serial.println("Rename failed");
       }
     }
   }
@@ -128,7 +138,7 @@ void buildJson(const String &path, JsonDocument &jsonDoc) {
         // Serial.println(file.path());
         fafile.close();
         if (!fafile.open(file.path(), O_READ)) {
-          error("open file in buildejson funct failed");
+          Serial.println("open file in buildejson funct failed");
         }
         fileInfo["creation_date"] = getTimestamps(fafile, true);
         fileInfo["modified_date"] = getTimestamps(fafile, false);
@@ -211,6 +221,7 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
       SdFile::dateTimeCallbackCancel();
 
       // ===================================================DATE SETTINNG=================================================
+      sdfile.close();
       if (!parseDate(creation_date)) {
         Serial.println("Failed to parse modified date");
         return;
