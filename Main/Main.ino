@@ -32,6 +32,8 @@ uint8_t hour = 0;
 uint8_t minute = 0;
 uint8_t second = 0;
 bool abort_upload = false;
+
+
 // ==================================================HANDEL WEBSOCKET=========================================================
 
 void sendtxt(String txt, uint8_t clientId) {
@@ -58,19 +60,30 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
       sendJson(clientId, message["path"]);
     }
     if (message["action"] == "abort_upload" || message["action"] == "Delete") {
+      int isfolder = path.indexOf(".");
+
       Serial.println();
       Serial.println("====================Requested Delete=========================");
       Serial.println();
       file.close();
-      if (SD.exists(path)) {
-        if (SD.remove(path)) {
-          Serial.printf("Deleting %s status: SUCCESS\n", path);
-          sendJson(clientId, message["folder_path"]);
+      if (isfolder > 0) {
+        if (SD.exists(path)) {
+          if (SD.remove(path)) {
+            Serial.printf("Deleting %s status: SUCCESS\n", path);
+            sendJson(clientId, message["folder_path"]);
+          } else {
+            Serial.printf("Deleting %s status: FAILED\n", path);
+          }
         } else {
-          Serial.printf("Deleting %s status: FAILED\n", path);
+          Serial.printf("File %s does not exist\n", path);
         }
       } else {
-        Serial.printf("File %s does not exist\n", path);
+        Serial.printf("Removing Dir: %s\n", path);
+        if (SD.rmdir(path)) {
+          Serial.println("Dir removed");
+        } else {
+          Serial.println("rmdir failed");
+        }
       }
     } else if (message["action"] == "Rename") {
       String folder_path = message["folder_path"];
@@ -81,6 +94,17 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
         sendJson(clientId, folder_path);
       } else {
         Serial.println("Rename failed");
+      }
+    } else if (message["action"] == "Create_Folder") {
+      Serial.print("Creating Dir: ");
+      Serial.println(path);
+      if (SD.mkdir(path)) {
+        Serial.print("Dir ");
+        Serial.print(path);
+        Serial.println(" created");
+        sendJson(clientId, message["folder_path"]);
+      } else {
+        Serial.println("mkdir failed");
       }
     }
   }

@@ -124,7 +124,107 @@ aside {
   left: 1.25rem;
   color: #000 !important;
 }
+.create_options {
+  display: flex;
+  background: var(--primary);
+  position: absolute;
+  right: 0;
+  bottom: 5rem;
+  font-size: large;
+  row-gap: 0.25rem;
+  flex-direction: column;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+.create_options span {
+  display: flex;
+  align-items: center;
+  column-gap: 0.75rem;
+  padding: 0.5rem;
+  cursor: default;
+  user-select: none;
+}
 
+.createdirinfo {
+  position: relative;
+  width: 90%;
+  margin: 0.25rem;
+  box-sizing: border-box;
+  border-bottom: rgba(255, 255, 255, 0.47) 2px solid;
+}
+
+.createfoldertitle {
+  position: absolute;
+  top: 2px;
+  margin: 0.1rem 0.25rem;
+  font-size: 0.85rem;
+  padding: 0 !important;
+  transition: 0.6s ease all;
+}
+.createfoldertitle:hover {
+  background: transparent !important;
+}
+
+.newfoldername {
+  display: block;
+  color: white;
+  width: 100%;
+  font-size: 16px;
+  padding: 0.25rem;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  position: relative; /* Positioning context for the pseudo-element */
+}
+
+.createdirinfo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0; /* Position at the bottom of the input */
+  width: 0; /* Start with 0 width */
+  height: 2px; /* Thickness of the border */
+  background-color: #ffffff; /* Color of the border */
+  transition: width 0.3s ease; /* Transition for width */
+}
+
+.createdirinfo:focus-within::after {
+  width: 100%;
+}
+
+.createdirinfo:focus-within {
+  border-bottom: 0 !important; /* Expand to full width when input is focused */
+  margin: 1rem 0.25rem 0.25rem 0.25rem !important;
+  & span {
+    top: -20px !important;
+    left: 0;
+  }
+}
+
+.create_options span:hover {
+  background: #ff0004;
+}
+.create_options::before,
+.create_options::after {
+  position: absolute;
+  width: 55px;
+  height: 40px;
+  content: "";
+}
+.create_options::after {
+  right: 0;
+  bottom: 0;
+  border-right: 6px solid white;
+  border-bottom: 6px solid white;
+}
+.create_options::before {
+  left: 0;
+  top: 0;
+  border-left: 6px solid white;
+  border-top: 6px solid white;
+}
 .cancel {
   margin-bottom: auto;
   background: var(--accent);
@@ -277,6 +377,7 @@ aside.open {
   column-gap: 0.25rem;
   align-items: center;
 }
+.movetofilepathpart,
 .filepathpart,
 .home {
   display: flex;
@@ -400,7 +501,7 @@ aside.open {
 }
 .card {
   display: grid;
-  grid-template-columns: 2.8rem 40% auto auto auto min-content;
+  grid-template-columns: 2.8rem 40% auto auto 9rem min-content;
   flex-shrink: 0;
   height: fit-content;
   justify-items: start;
@@ -411,7 +512,7 @@ aside.open {
   transition: width 0.3s;
 }
 .folder {
-  grid-template-columns: min-content 50% max-content min-content;
+  grid-template-columns: 2.8rem 40% auto auto 5rem auto;
 }
 .card span {
   line-height: 100%;
@@ -454,7 +555,7 @@ aside.open {
   width: 100%;
   cursor: pointer;
 }
-
+.movingpath:hover,
 .filename:hover,
 .filename:active {
   text-overflow: unset;
@@ -508,64 +609,77 @@ aside.open {
     fill: #f0f0f0;
   }
 }
-.download-btn {
-  background: none;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+
+.moveto {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  row-gap: 0.5rem;
+  left: -16rem;
+  height: 17rem;
+  max-width: 14rem;
+  width: 14rem;
+  padding: 0.75rem;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  background: var(--primary);
 }
 
-.progress-bar {
-  position: absolute;
-  bottom: -0.25rem;
-  left: 0;
-  width: 0;
-  height: 0.25rem;
-  background-color: #28a745;
-  border-radius: 0 0 0.25rem 0.25rem;
-  transition: width 0.3s;
-}
-.arrow {
-  transition: transform 0.3s ease-in-out;
-}
-.arrow.bounce {
-  animation: bounce 450ms infinite;
+.movingpath {
+  display: flex;
+  align-items: center;
+  column-gap: 0.25rem;
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 
-.loader {
+.current-loc {
+  font-size: 1rem;
+}
+.folders {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 75%;
+  row-gap: 0.5rem;
+}
+
+.movetofolder {
+  display: flex;
+  /* cursor: default; */
+  height: fit-content;
+  background: var(--primary);
+  column-gap: 0.5rem;
+}
+
+.movetobtn {
+  display: flex;
   position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  border: 3px solid transparent;
-  border-top: 3px solid #ffffff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  display: none;
+  bottom: 10px;
+  right: 10px;
+  margin-left: auto;
+  margin-top: auto;
+  column-gap: 0.75rem;
+  width: fit-content;
 }
-.icon.bouncing .loader {
-  display: block;
+.cancelmove,
+.confirmmove {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: max-content;
+  clip-path: polygon(0% 0%, 91% 0, 100% 18%, 100% 100%, 9% 100%, 0 82%);
+  z-index: 1; /* Ensure the main content is above the border */
+  background: var(--accent);
+  color: #000;
+  box-sizing: border-box;
+  padding: 0.15rem;
 }
-.icon.bouncing svg > :not(.arrow) {
-  display: none;
-}
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(5px) scale(1);
-  }
-  50% {
-    transform: translateY(3px) scale(1);
-  }
-}
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.cancelmove span,
+.confirmmove span {
+  color: var(--accent);
+  padding: 0.25rem;
+  clip-path: polygon(0% 0%, 91% 0, 100% 18%, 100% 100%, 9% 100%, 0 82%);
 }
 
 @media (max-width: 768px) {
