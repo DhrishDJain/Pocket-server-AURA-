@@ -359,34 +359,32 @@ function fillmovetodir(dir) {
     }
 
     const movetobackButton = folder.parentNode.querySelector(".movetoback");
-    if (!movetobackButton.hasAttribute("data-event-attached")) {
-      movetobackButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        let finalpath = "";
-        const elements = Array.from(
-          folder.parentNode.querySelectorAll(".movetofilepathpart")
-        ).slice(1);
-        for (let i = 0; i < elements.length - 1; i++) {
-          finalpath += "/";
-          finalpath += elements[i].children[1].textContent.replace(/\s/g, "");
-          finalpath += "/";
-        }
-        if (finalpath.length == 0) {
-          finalpath = "/";
-        }
-        fillmovetodir(finalpath);
-        if (
-          folder.parentNode.querySelector(".movingpath").children.length > 2
-        ) {
-          folder.parentNode
-            .querySelector(".movingpath")
-            .removeChild(
-              folder.parentNode.querySelector(".movingpath").lastChild
-            );
-        }
-      });
-      movetobackButton.setAttribute("data-event-attached", "true");
-    }
+    const newmovetobackButtonListener = (event) => {
+      event.stopPropagation();
+      let finalpath = "";
+      const elements = Array.from(
+        folder.parentNode.querySelectorAll(".movetofilepathpart")
+      ).slice(1);
+      for (let i = 0; i < elements.length - 1; i++) {
+        finalpath += "/";
+        finalpath += elements[i].children[1].textContent.replace(/\s/g, "");
+        finalpath += "/";
+      }
+      if (finalpath.length == 0) {
+        finalpath = "/";
+      }
+      fillmovetodir(finalpath);
+      if (folder.parentNode.querySelector(".movingpath").children.length > 2) {
+        folder.parentNode
+          .querySelector(".movingpath")
+          .removeChild(
+            folder.parentNode.querySelector(".movingpath").lastChild
+          );
+      }
+    };
+    movetobackButton.removeEventListener("click", movetobackButton.listener);
+    movetobackButton.listener = newmovetobackButtonListener;
+    movetobackButton.addEventListener("click", movetobackButton.listener);
 
     const confirmmove = folder.parentNode.querySelector(".confirmmove");
     var selectedfile = folder.parentNode.parentNode.parentNode.parentNode;
@@ -444,7 +442,6 @@ function fillmovetodir(dir) {
           "/" +
           movetopath +
           selectedfile.querySelector(".filename").textContent;
-        
       }
       console.log(
         JSON.stringify({

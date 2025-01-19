@@ -33,7 +33,43 @@ uint8_t minute = 0;
 uint8_t second = 0;
 bool abort_upload = false;
 
+void removeDir(fs::FS &fs, const String dirname) {
+  Serial.printf("Listing directory: %s\n", dirname);
 
+  File root = fs.open(dirname);
+  if (!root) {
+    Serial.println("Failed to open directory");
+    return;
+  }
+  if (!root.isDirectory()) {
+    Serial.println("Not a directory");
+    return;
+  }
+
+  File file = root.openNextFile();
+  while (file) {
+    if (file.isDirectory()) {
+      Serial.print("  DIR : ");
+      Serial.println(file.path());
+      removeDir(SD, file.path());
+    } else {
+      Serial.print("DELETING FILE: ");
+      Serial.println(file.path());
+      if (SD.remove(file.path())) {
+        Serial.println("SUCCES");
+      } else {
+        Serial.println("deleting file failed");
+      }
+    }
+    file = root.openNextFile();
+  }
+  Serial.printf("Removing Dir: %s\n", dirname);
+  if (fs.rmdir(dirname)) {
+    Serial.println("Dir removed");
+  } else {
+    Serial.println("rmdir failed");
+  }
+}
 // ==================================================HANDEL WEBSOCKET=========================================================
 
 void sendtxt(String txt, uint8_t clientId) {
@@ -70,7 +106,6 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
         if (SD.exists(path)) {
           if (SD.remove(path)) {
             Serial.printf("Deleting %s status: SUCCESS\n", path);
-            sendJson(clientId, message["folder_path"]);
           } else {
             Serial.printf("Deleting %s status: FAILED\n", path);
           }
@@ -78,13 +113,14 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
           Serial.printf("File %s does not exist\n", path);
         }
       } else {
-        Serial.printf("Removing Dir: %s\n", path);
-        if (SD.rmdir(path)) {
-          Serial.println("Dir removed");
+        if (SD.exists(path)) {
+          removeDir(SD, path);
+          Serial.printf("Removing Dir: %s\n", path);
         } else {
-          Serial.println("rmdir failed");
+          Serial.println("Folder does not exist.");
         }
       }
+      sendJson(clientId, message["folder_path"]);
     } else if (message["action"] == "Rename") {
       String folder_path = message["folder_path"];
       String file_action_parameter = message["file_action_parameter"];

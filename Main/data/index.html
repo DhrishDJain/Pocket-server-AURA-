@@ -7,7 +7,7 @@
     <title>AURA_DB</title>
 
     <link rel="stylesheet" href="style43.css" />
-    <script type="text/javascript" src="script12.js"></script>
+    <script type="text/javascript" src="script142.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -260,7 +260,6 @@
                 .querySelector(".create_options")
                 .classList.toggle("hidden");
             });
-         
 
             function formatDate(date) {
               const day = String(date.getDate()).padStart(2, "0");
@@ -849,6 +848,9 @@
                     </div>
                   </div>
                   <div class="folders noscroll">
+                    <div class="home">
+                      
+                    </div>
                     <div class="movetofolder hidden">
                       <div style="height: fit-content" class="icon">
                         <svg
@@ -879,7 +881,9 @@
                       >
                     </div>
                     <div style="background: #ff0004" class="cancelmove">
-                      <span style="color: #ff0004; background: var(--primary)"
+                      <span
+                        onclick="this.parentNode.parentNode.parentNode.classList.add('hidden');"
+                        style="color: #ff0004; background: var(--primary)"
                         >Cancle</span
                       >
                     </div>
@@ -1127,13 +1131,15 @@
                       >
                     </div>
                     <div style="background: #ff0004" class="confirmmove">
-                      <span style="color: #ff0004; background: var(--primary)"
+                      <span
+                        onclick="this.parentNode.parentNode.parentNode.classList.add('hidden');"
+                        style="color: #ff0004; background: var(--primary)"
                         >Cancle</span
                       >
                     </div>
                   </div>
                 </div>
-                
+
                 <span onclick="file_operation(this,true)" class="option">
                   <svg
                     width="20"
