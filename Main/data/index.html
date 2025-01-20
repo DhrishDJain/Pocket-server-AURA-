@@ -7,7 +7,7 @@
     <title>AURA_DB</title>
 
     <link rel="stylesheet" href="style453.css" />
-    <script type="text/javascript" src="script142.js"></script>
+    <script type="text/javascript" src="script12.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -332,7 +332,7 @@
                   creation_date: await formatDate(date),
                   modified_date: await formatDate(new Date(file.lastModified)),
                   extension: file.name.split(".").pop(),
-                };  
+                };
                 formData.append(
                   "metadata",
                   new Blob([JSON.stringify(jsonData)], {
@@ -576,17 +576,18 @@
                 if (finalpath.length == 0) {
                   finalpath = "/";
                 }
-                // console.log(fullFolderPath);
                 show_file_in_dir(finalpath);
                 if (document.querySelector(".path").children.length > 2) {
                   document
                     .querySelector(".path")
                     .removeChild(document.querySelector(".path").lastChild);
                 }
+                let currentopened = finalpath.split("/");
+                currentopened.pop();
                 document.querySelector(".currentopenedfolder").textContent =
                   document.querySelector(".path").children.length == 2
                     ? "Home"
-                    : fullFolderPath.replace(/.*\//, "");
+                    : currentopened.pop();
               });
           </script>
           <div
@@ -688,7 +689,7 @@
           <span class="sizeheader header" onclick="sortItems(this)">Size</span>
         </div>
         <div class="item-container noscroll">
-          <div class="card hidden">
+          <div class="card">
             <div style="margin: 0 auto" class="icon">
               <svg
                 height="800px"
@@ -959,11 +960,16 @@
                 </span>
 
                 <div class="details hidden">
-                  Type: <span class="detailtype">Exten</span>
-                  SIZE: <span class="detailsize">000.00MB</span>
-                  Location: <span class="detailloc noscroll">level0/level1/level2</span>
-                  Last Modified <span class="detailmoddate">00-00-0000 00:00</span>
-                  Created On <span class="detailcreatedate">00-00-0000 00:00</span>
+                  Type: <span class="detailtype">Exten</span> SIZE:
+                  <span class="detailsize">000.00MB</span>
+                  Location:
+
+                  <span class="detailloc noscroll"
+                    >level0/levezdfdfsadfdffffgfdfdfl1/level2</span
+                  >
+                  Last Modified
+                  <span class="detailmoddate">00-00-0000 00:00</span> Created On
+                  <span class="detailcreatedate">00-00-0000 00:00</span>
                 </div>
 
                 <span

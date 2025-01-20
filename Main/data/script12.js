@@ -42,11 +42,16 @@ connction.onmessage = (event) => {
   } else {
     const dirName = firstKey;
     const fileData = tempobj[firstKey];
-
     if (fileData !== undefined) {
       files_on_server[dirName] = fileData;
     } else {
       console.warn(`No existing data for key: ${firstKey}`);
+    }
+    if (Object.keys(tempobj).length >= 2) {
+      for (i = 1; i < Object.keys(tempobj).length; i++) {
+        files_on_server[Object.keys(tempobj)[i]] =
+          tempobj[Object.keys(tempobj)[i]];
+      }
     }
     show_file_in_dir(firstKey);
   }
@@ -244,7 +249,6 @@ function file_operation(element, isfolder = false) {
         files_on_server[finalpath][i]["filename"] == orifilename
       ) {
         index = i;
-        console.log(files_on_server[finalpath][i]["filename"]);
       }
     }
     details.querySelector(".detailtype").textContent =
@@ -254,6 +258,9 @@ function file_operation(element, isfolder = false) {
     );
     details.querySelector(".detailloc").textContent =
       finalpath + parentElement.querySelector(".filename").textContent;
+    details.querySelector(".detailloc").addEventListener("mouseleave", () => {
+      details.querySelector(".detailloc").scrollLeft = 0;
+    });
     details.querySelector(".detailmoddate").textContent =
       files_on_server[finalpath][index]["modified_date"];
     details.querySelector(".detailcreatedate").textContent =

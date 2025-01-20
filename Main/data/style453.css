@@ -703,12 +703,18 @@ aside.open {
   align-self: flex-start;
 }
 .detailloc {
+  color: #ffffff;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   text-wrap: nowrap;
-  width: 11rem;
+  width: calc(10rem);
+  box-sizing: border-box;
   min-width: unset !important;
 }
+/* .detailloc:not(:hover){
+  overflow: visible;
+} */
 
 @media (max-width: 768px) {
   /* 768px */
