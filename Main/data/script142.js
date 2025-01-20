@@ -143,6 +143,7 @@ function show_file_in_dir(dir) {
         if (!optiondropdown[index].contains(event.target)) {
           optionContent.classList.add("hidden");
           optionContent.querySelector(".moveto").classList.add("hidden");
+          optionContent.querySelector(".details").classList.add("hidden");
           while (
             optionContent.querySelector(".movingpath").children.length > 3
           ) {
@@ -227,6 +228,36 @@ function file_operation(element, isfolder = false) {
   if (action === "Move") {
     const moveto = parentElement.querySelector(".moveto");
     moveto.classList.remove("hidden");
+  } else if (action === "Details") {
+    const details = parentElement.querySelector(".details");
+    details.classList.toggle("hidden");
+    var index;
+    var orifilename =
+      parentElement.querySelector(".filename").textContent.split(".")[0] +
+      "#" +
+      parentElement.querySelector(".filename").textContent.split(".").pop() +
+      "#" +
+      ".zip";
+    for (let i = 0; i < files_on_server[finalpath].length; i++) {
+      if (
+        Object.keys(files_on_server[finalpath][i])[0] == "filename" &&
+        files_on_server[finalpath][i]["filename"] == orifilename
+      ) {
+        index = i;
+        console.log(files_on_server[finalpath][i]["filename"]);
+      }
+    }
+    details.querySelector(".detailtype").textContent =
+      files_on_server[finalpath][index]["extension"];
+    details.querySelector(".detailsize").textContent = file_size_conversion(
+      files_on_server[finalpath][index]["size"]
+    );
+    details.querySelector(".detailloc").textContent =
+      finalpath + parentElement.querySelector(".filename").textContent;
+    details.querySelector(".detailmoddate").textContent =
+      files_on_server[finalpath][index]["modified_date"];
+    details.querySelector(".detailcreatedate").textContent =
+      files_on_server[finalpath][index]["creation_date"];
   } else if (action === "Rename") {
     // set compelet file path
     parentElement.querySelector(".filename").classList.add("hidden");

@@ -6,7 +6,7 @@
 
     <title>AURA_DB</title>
 
-    <link rel="stylesheet" href="style43.css" />
+    <link rel="stylesheet" href="style453.css" />
     <script type="text/javascript" src="script142.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
@@ -332,8 +332,7 @@
                   creation_date: await formatDate(date),
                   modified_date: await formatDate(new Date(file.lastModified)),
                   extension: file.name.split(".").pop(),
-                };
-                console.log(jsonData);
+                };  
                 formData.append(
                   "metadata",
                   new Blob([JSON.stringify(jsonData)], {
@@ -848,9 +847,7 @@
                     </div>
                   </div>
                   <div class="folders noscroll">
-                    <div class="home">
-                      
-                    </div>
+                    <div class="home"></div>
                     <div class="movetofolder hidden">
                       <div style="height: fit-content" class="icon">
                         <svg
@@ -960,6 +957,15 @@
                   </svg>
                   Details
                 </span>
+
+                <div class="details hidden">
+                  Type: <span class="detailtype">Exten</span>
+                  SIZE: <span class="detailsize">000.00MB</span>
+                  Location: <span class="detailloc noscroll">level0/level1/level2</span>
+                  Last Modified <span class="detailmoddate">00-00-0000 00:00</span>
+                  Created On <span class="detailcreatedate">00-00-0000 00:00</span>
+                </div>
+
                 <span
                   onclick="file_operation(this)"
                   style="color: #ff0004"
