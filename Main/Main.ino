@@ -125,6 +125,9 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
       String folder_path = message["folder_path"];
       String file_action_parameter = message["file_action_parameter"];
       Serial.printf("Renaming file %s to %s\n", path, file_action_parameter);
+      if (!SD.exists(path)) {
+        Serial.printf("File %s does not exist\n", path);
+      }
       if (SD.rename(path, file_action_parameter)) {
         Serial.println("File renamed");
         sendJson(clientId, folder_path);
@@ -261,6 +264,7 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
     file.write(data, len);
   } else {
     Serial.println("Failed to open file for writing");
+    request->send(200, "text/plain", "Upload Canceled");
     return;
   }
   if (final) {
@@ -378,33 +382,31 @@ void setup() {
     [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
       handleFileUpload(request, filename, index, data, len, final);
     });
-  server.on(
-    "/delete", HTTP_POST, [](AsyncWebServerRequest *request) {  // Acknowledge receipt
-    },
-    NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-      Serial.println();
-      Serial.println("====================Requested Delete=========================");
-      Serial.println();
-      DynamicJsonDocument del(1024);  // Use a more descriptive name
-      DeserializationError error = deserializeJson(del, data);
-      if (error) {
-        Serial.println("Failed to parse JSON");
-        request->send(400, "application/json", "{\"status\":\"error\", \"message\":\"Invalid JSON\"}");
-        return;  // Exit if JSON parsing fails
+
+  server.on("/download", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String filename = request->getParam("file")->value();
+    filename.trim();
+    Serial.println("Download handler started for: " + filename);
+    File file = SD.open(filename, "r");
+    if (!file) {
+      Serial.println("File not found: " + filename);
+      request->send(404, "text/plain", "File not found");
+      return;
+    }
+    // Send the file in chunks
+    AsyncWebServerResponse *response = request->beginResponse("application/octet-stream", file.size(), [file](uint8_t *buffer, size_t maxLen, size_t total) mutable -> size_t {
+      size_t bytesRead = file.read(buffer, maxLen);
+      if (bytesRead == 0) {
+        file.close();  // Close the file when done reading
+        Serial.println("File Send");
       }
-      const char *path = del["path"];  // Get the path from the JSON
-      if (SD.exists(path)) {
-        if (SD.remove(path)) {
-          Serial.printf("Deleting %s status: SUCCESS\n", path);
-          request->send(200, "application/json", "{\"status\":\"success\", \"message\":\"File deleted\"}");
-        } else {
-          Serial.printf("Deleting %s status: FAILED\n", path);
-          request->send(500, "application/json", "{\"status\":\"error\", \"message\":\"File deletion failed\"}");
-        }
-      } else {
-        Serial.printf("File %s does not exist\n", path);
-      }
+      return bytesRead;
     });
+    response->addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+    response->addHeader("Server", "Aura");
+    request->send(response);
+  });
+
   server.begin();
   websockets.begin();
   websockets.onEvent(webSocketEvent);

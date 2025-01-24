@@ -3,155 +3,154 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
     <script src="/jszip.min.js"></script>
+    <title>File Download from ESP32 with Progress</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      input[type="text"] {
+        width: 300px;
+        padding: 10px;
+        margin-right: 10px;
+      }
+      input[type="submit"] {
+        padding: 10px 20px;
+      }
+      #progressContainer {
+        width: 100%;
+        background-color: #f3f3f3;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-top: 20px;
+        display: none; /* Hidden by default */
+      }
+      #progressBar {
+        width: 0;
+        height: 30px;
+        background-color: #4caf50;
+        text-align: center;
+        line-height: 30px;
+        color: white;
+        border-radius: 5px;
+      }
+    </style>
   </head>
   <body>
-    <div class="upload">
-      <form
-        id="uploadForm"
-        action="/handleupload"
-        method="POST"
-        class="hidden"
-        enctype="multipart/form-data"
-      >
-        <input
-          type="file"
-          id="fileholder"
-          name="file"
-          onchange="document.getElementById('uploadButton').click()"
-        />
-        <button type="submit" id="uploadButton">Upload and Compress</button>
-      </form>
-
-      <div
-        class="addbtn"
-        onclick="document.getElementById('fileholder').click()"
-      >
-        <svg
-          width="2rem"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="6 6 12 12"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M11.25 12.75V18H12.75V12.75H18V11.25H12.75V6H11.25V11.25H6V12.75H11.25Z"
-            fill="#fff"
-          ></path>
-        </svg>
-      </div>
-
-      <!-- Upload Status Element -->
-      <div id="uploadStatus" class="uploadstat" style="display: none">
-        <p>Upload Progress: <span id="uploadPercentage">0%</span></p>
-      </div>
-
-      <script>
-        function formatDate(date) {
-          const day = String(date.getDate()).padStart(2, "0");
-          const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-          const year = date.getFullYear();
-          const hours = String(date.getHours()).padStart(2, "0");
-          const minutes = String(date.getMinutes()).padStart(2, "0");
-          const seconds = String(date.getSeconds()).padStart(2, "0");
-
-          return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-        }
-
-        document
-          .getElementById("uploadForm")
-          .addEventListener("submit", async (event) => {
-            event.preventDefault();
-            const fileInput = document.getElementById("fileholder");
-            const file = fileInput.files[0];
-
-            if (!file) {
-              alert("Please select a file to upload.");
-              return;
-            }
-
-            const zip = new JSZip();
-            zip.file(file.name, file, {
-              compression: "DEFLATE",
-              compressionOptions: { level: 9 },
-            });
-            const zipBlob = await zip.generateAsync({ type: "blob" });
-            const formData = new FormData();
-            const date = new Date();
-            let finalpath = "";
-            const elements = document.querySelectorAll(".filepathpart");
-            for (let i = 0; i < elements.length; i++) {
-              finalpath += elements[i].children[1].textContent.replace(
-                /\s/g,
-                ""
-              );
-              finalpath += "/";
-            }
-            if (finalpath.length == 0) {
-              finalpath = "/";
-            }
-            const filename =
-              finalpath +
-              file.name.split(".")[0] +
-              "#" +
-              file.name.split(".").pop() +
-              "#";
-
-            formData.append("file", zipBlob, filename);
-            const jsonData = {
-              filename: filename,
-              creation_date: await formatDate(date),
-              modified_date: await formatDate(new Date(file.lastModified)),
-              extension: file.name.split(".").pop(),
-            };
-            formData.append(
-              "metadata",
-              new Blob([JSON.stringify(jsonData)], {
-                type: "application/json",
-              }),
-              "file_data.json"
-            );
-
-            // Show the upload status element
-            document.getElementById("uploadStatus").style.display = "block";
-
-            // Create XMLHttpRequest for upload
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "/handleupload", true);
-
-            xhr.upload.onprogress = function (event) {
-              if (event.lengthComputable) {
-                const percentage = Math.round(
-                  (event.loaded / event.total) * 100
-                );
-                document.getElementById(
-                  "uploadPercentage"
-                ).innerText = `${percentage}%`;
-              }
-            };
-
-            xhr.onload = function () {
-              if (xhr.status === 200) {
-                console.log("UPLOAD SUCCESS");
-                alert("Upload successful!");
-              } else {
-                console.error("Upload failed with status:", xhr.status);
-                alert("Upload failed. Please try again.");
-              }
-            };
-
-            xhr.onerror = function () {
-              console.error("There was a problem with the upload.");
-              alert(
-                "Upload failed. Please check your connection and try again."
-              );
-            };
-
-            xhr.send(formData);
-          });
-      </script>
+    <h1>Download File from ESP32</h1>
+    <form id="downloadForm">
+      <input type="text" id="fileName" placeholder="Enter file name" required />
+      <input type="submit" value="Download" />
+    </form>
+    <div id="progressContainer">
+      <div id="progressBar">0%</div>
     </div>
+    <div id="message"></div>
+    <div id="links"></div>
+    <button id="cancelDownload" disabled>Cancel Download</button>
+    <script>
+      document
+        .getElementById("downloadForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the form from submitting the traditional way
+
+          const fileName = document.getElementById("fileName").value;
+          const url = `http://192.168.4.1/download?file=${encodeURIComponent(
+            "/" + fileName
+          )}`; // Change IP if needed
+
+          // Show the progress bar
+          const progressContainer =
+            document.getElementById("progressContainer");
+          const progressBar = document.getElementById("progressBar");
+          progressContainer.style.display = "block";
+          progressBar.style.width = "0%";
+          progressBar.innerText = "0%";
+
+          // Create a new XMLHttpRequest
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", url, true);
+          xhr.responseType = "blob"; // Expect a binary file
+
+          // Update progress bar
+          xhr.onprogress = function (event) {
+            if (event.lengthComputable) {
+              const percentComplete = (event.loaded / event.total) * 100;
+              progressBar.style.width = percentComplete + "%";
+              progressBar.innerText = Math.round(percentComplete) + "%";
+            }
+          };
+
+          // Handle download completion
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              const arrayBuffer = xhr.response;
+
+              // Load the zip file using JSZip
+              const zip = new JSZip();
+              zip.loadAsync(arrayBuffer).then((zip) => {
+                const linksContainer = document.getElementById("links");
+                linksContainer.innerHTML = ""; // Clear previous links
+
+                // Extract files and create download links
+                Object.keys(zip.files).forEach((filename) => {
+                  zip.files[filename].async("blob").then((fileData) => {
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(fileData);
+                    link.download = filename; // Set the filename for download
+                    link.innerText = `Download ${filename}`;
+                    linksContainer.appendChild(link);
+                    linksContainer.appendChild(document.createElement("br")); // Line break
+                  });
+                });
+              });
+            } else {
+              document.getElementById("message").innerText =
+                "Error downloading file.";
+            }
+          };
+
+          // Handle errors
+          xhr.onerror = function () {
+            console.error("Request failed.");
+            document.getElementById("message").innerText = "Download failed!";
+          };
+          document.getElementById("cancelDownload").disabled = false;
+
+          // Add event listener for cancel button
+          document.getElementById("cancelDownload").onclick = function () {
+            xhr.abort(); // Cancel the download
+            console.log("Download canceled.");
+            document.getElementById("cancelDownload").disabled = true; // Disable cancel button after cancellation
+          };
+          xhr.send(); // Send the request
+        });
+
+      function loadZip(blob) {
+        const zip = new JSZip();
+        return zip
+          .loadAsync(blob)
+          .then((zip) => {
+            const linksContainer = document.getElementById("links");
+            linksContainer.innerHTML = ""; // Clear previous links
+
+            // Extract files and create download links
+            Object.keys(zip.files).forEach((filename) => {
+              zip.files[filename].async("blob").then((fileData) => {
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(fileData);
+                link.download = filename; // Set the filename for download
+                link.innerText = `Download ${filename}`;
+                linksContainer.appendChild(link);
+                linksContainer.appendChild(document.createElement("br")); // Line break
+              });
+            });
+          })
+          .catch((error) =>
+            console.error("Error loading or unzipping the file:", error)
+          );
+      }
+    </script>
   </body>
 </html>

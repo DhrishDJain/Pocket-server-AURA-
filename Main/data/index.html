@@ -6,8 +6,8 @@
 
     <title>AURA_DB</title>
 
-    <link rel="stylesheet" href="style453.css" />
-    <script type="text/javascript" src="script12.js"></script>
+    <link rel="stylesheet" href="style37.css" />
+    <script type="text/javascript" src="script72.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -186,7 +186,7 @@
             <div class="uploading">
               <div class="uploadingfile">
                 <div class="uploading-text">
-                  UPLOADING
+                  <div class="processname"></div>
                   <span>.</span>
                   <span>.</span>
                   <span>.</span>
@@ -229,8 +229,11 @@
                 <div class="uploadPercentage">100%</div>
               </div>
             </div>
-            <span class="uploadsuccessindication cancelindication hidden"
+            <span class="uploadsuccessindication hidden"
               >Upload Successful</span
+            >
+            <span class="downloadsuccessindication hidden"
+              >Download Successful</span
             >
           </div>
 
@@ -291,6 +294,7 @@
                   .classList.remove("hidden");
                 document.querySelector(".cancel").classList.remove("hidden");
                 document.querySelector(".uploading").classList.remove("hidden");
+                document.querySelector(".processname").textContent="UPLOADING";
 
                 // zipping file
                 const zip = new JSZip();
@@ -424,6 +428,7 @@
                     console.error("Upload failed with status:", xhr.status);
                     alert("Upload failed. Please try again.");
                   }
+                  currentFilename = "";
                 };
 
                 xhr.onerror = function () {
@@ -433,44 +438,41 @@
                   );
                 };
 
+                document.querySelector(".cancel").onclick = function (event) {
+                  event.stopPropagation();
+    
+                  if (xhr) {
+                    xhr.abort(); // Abort the upload
+    
+                    console.log("Deleting ", currentFilename, " file");
+                    connction.send(
+                      JSON.stringify({
+                        action: "abort_upload",
+                        folder_path: finalpath,
+                        path: currentFilename + ".zip",
+                      })
+                    );
+                    document.querySelector(".uploading").classList.add("hidden");
+                    document.querySelector(".cancelindication").textContent =
+                      "Upload Cancled";
+                    document
+                      .querySelector(".cancelindication")
+                      .classList.remove("hidden");
+                    setTimeout(() => {
+                      document
+                        .querySelector(".uploadStatus")
+                        .classList.add("hidden");
+    
+                      document.querySelector(".cancel").classList.add("hidden");
+                      document
+                        .querySelector(".cancelindication")
+                        .classList.add("hidden");
+                    }, 2000);
+                  }
+                };
                 xhr.send(formData);
               });
 
-            document
-              .querySelector(".cancel")
-              .addEventListener("click", (event) => {
-                event.stopPropagation();
-
-                if (xhr) {
-                  xhr.abort(); // Abort the upload
-
-                  console.log(currentFilename);
-                  connction.send(
-                    JSON.stringify({
-                      action: "abort_upload",
-                      folder_path: finalpath,
-                      path: currentFilename + ".zip",
-                    })
-                  );
-                  // }
-                  // }, 2000);
-
-                  document.querySelector(".uploading").classList.add("hidden");
-                  document
-                    .querySelector(".cancelindication")
-                    .classList.remove("hidden");
-                  setTimeout(() => {
-                    document
-                      .querySelector(".uploadStatus")
-                      .classList.add("hidden");
-
-                    document.querySelector(".cancel").classList.add("hidden");
-                    document
-                      .querySelector(".cancelindication")
-                      .classList.add("hidden");
-                  }, 2000);
-                }
-              });
           </script>
         </div>
         <div class="filepath">
@@ -689,7 +691,7 @@
           <span class="sizeheader header" onclick="sortItems(this)">Size</span>
         </div>
         <div class="item-container noscroll">
-          <div class="card">
+          <div class="card hidden">
             <div style="margin: 0 auto" class="icon">
               <svg
                 height="800px"

@@ -215,7 +215,7 @@ function file_operation(element, isfolder = false) {
     finalpath += elements[i].children[1].textContent.replace(/\s/g, "");
     finalpath += "/";
   }
-  if (finalpath.length == 0) {
+  if (elements.length == 0) {
     finalpath = "/";
   }
   var filename;
@@ -274,7 +274,7 @@ function file_operation(element, isfolder = false) {
     renameto.spellcheck = false;
     renameto.addEventListener("keypress", function (event) {
       if (event.key === "Enter") {
-        if (isfolder) {
+        if (!isfolder) {
           file_action_param =
             finalpath +
             renameto.value.split(".")[0] +
@@ -289,6 +289,14 @@ function file_operation(element, isfolder = false) {
           file_action_param = finalpath + renameto.value;
         }
 
+        console.log(
+          JSON.stringify({
+            action: action,
+            folder_path: finalpath,
+            file_action_parameter: file_action_param,
+            path: filename,
+          })
+        );
         connction.send(
           JSON.stringify({
             action: action,
@@ -299,7 +307,6 @@ function file_operation(element, isfolder = false) {
         );
         renameto.remove();
         parentElement.querySelector(".filename").classList.remove("hidden");
-        console.log(file_action_param);
       }
     });
     document.addEventListener("keydown", function (event) {
@@ -319,6 +326,132 @@ function file_operation(element, isfolder = false) {
       parentElement.querySelector(".dateofmodi")
     );
     renameto.select();
+  } else if (action === "Download" && !isfolder) {
+    parentElement.querySelector(".option-content").classList.add("hidden");
+    document.querySelector(".uploadStatus").classList.remove("hidden");
+    document.querySelector(".cancel").classList.remove("hidden");
+    document.querySelector(".uploading").classList.remove("hidden");
+    document.querySelector(".processname").textContent = "DOWNLOADING";
+
+    const fileName = parentElement.querySelector(".filename").textContent;
+    const elements = document.querySelectorAll(".filepathpart");
+    finalpath = "";
+    for (let i = 0; i < elements.length; i++) {
+      finalpath += elements[i].children[1].textContent.replace(/\s/g, "");
+      finalpath += "/";
+    }
+    if (finalpath.length == 0) {
+      finalpath = "/";
+    }
+    const filename =
+      finalpath +
+      fileName.split(".")[0] +
+      "#" +
+      fileName.split(".").pop() +
+      "#" +
+      ".zip";
+    const url = `http://192.168.4.1/download?file=${encodeURIComponent(
+      filename
+    )}`; // Change IP if needed
+
+    // Create a new XMLHttpRequest
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob"; // Expect a binary file
+    const bars = document.querySelectorAll(".bar");
+
+    bars.forEach((bar) => {
+      bar.classList.add("hidden");
+    });
+    document.querySelector(".uploadname").innerHTML = fileName;
+
+    // Variables to calculate upload speed
+    let startTime = Date.now();
+    let uploadedBytes = 0;
+
+    // Start upload
+    xhr.onprogress = function (event) {
+      if (event.lengthComputable) {
+        const percentage = Math.round((event.loaded / event.total) * 100);
+        document.querySelector(".chunkedsend").innerHTML = file_size_conversion(
+          event.loaded
+        );
+        document.querySelector(
+          ".uploadPercentage"
+        ).innerText = `${percentage}%`;
+        bars.forEach((bar, index) => {
+          if (index < percentage / 10 && index != 9) {
+            bar.classList.remove("hidden");
+          }
+        });
+        // Calculate upload speed
+        const currentTime = Date.now();
+        const timeElapsed = (currentTime - startTime) / 1000; // in seconds
+        uploadedBytes = event.loaded; // total uploaded bytes
+        const speed = uploadedBytes / timeElapsed; // bytes per second
+        const speedInKB = (speed / 1024).toFixed(2); // convert to KB/s
+        document.querySelector(".speed").innerText = `${speedInKB} KB/s`;
+      }
+    };
+
+    // Handle download completion
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        bars[9].classList.remove("hidden");
+        document.querySelector(".uploadPercentage").innerText = `100%`;
+        document.querySelector(".speed").innerText = `0KB/s`;
+        document.querySelector(".uploading").classList.add("hidden");
+
+        document
+          .querySelector(".downloadsuccessindication")
+          .classList.remove("hidden");
+        setTimeout(() => {
+          document.querySelector(".cancel").classList.add("hidden");
+          document
+            .querySelector(".downloadsuccessindication")
+            .classList.add("hidden");
+          document.querySelector(".uploading").classList.remove("hidden");
+          document.querySelector(".uploadStatus").classList.add("hidden");
+        }, 2000);
+        const arrayBuffer = xhr.response;
+        const zip = new JSZip();
+        zip.loadAsync(arrayBuffer).then((zip) => {
+          Object.keys(zip.files).forEach((filename) => {
+            zip.files[filename].async("blob").then((fileData) => {
+              const link = document.createElement("a");
+              link.href = URL.createObjectURL(fileData);
+              link.download = filename; // Set the filename for download
+              document.body.appendChild(link); // Append the link to the body
+              link.click(); // Programmatically click the link to trigger the download
+              link.remove();
+            });
+          });
+        });
+      } else {
+        document.getElementById("message").innerText =
+          "Error downloading file.";
+      }
+    };
+
+    // Handle errors
+    xhr.onerror = function () {
+      console.error("Request failed.");
+      document.getElementById("message").innerText = "Download failed!";
+    };
+    document.querySelector(".cancel").onclick = function () {
+      xhr.abort(); // Cancel the download
+      console.log("Download canceled.");
+      document.querySelector(".uploading").classList.add("hidden");
+      document.querySelector(".cancelindication").textContent =
+        "Download Cancled";
+      document.querySelector(".cancelindication").classList.remove("hidden");
+      setTimeout(() => {
+        document.querySelector(".uploadStatus").classList.add("hidden");
+        document.querySelector(".cancel").classList.add("hidden");
+        document.querySelector(".cancelindication").classList.add("hidden");
+      }, 2000);
+    };
+    xhr.send();
   } else {
     console.log(
       JSON.stringify({

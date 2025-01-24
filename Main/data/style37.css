@@ -243,10 +243,15 @@ aside {
   min-height: 4.25rem;
   box-sizing: border-box;
 }
+.uploadsuccessindication,
+.downloadsuccessindication,
 .cancelindication {
   font-size: 2rem;
   font-weight: 500;
   margin: auto;
+}
+.downloadsuccessindication {
+  font-size: 1.75rem;
 }
 .uploadingfile {
   display: flex;
@@ -255,7 +260,8 @@ aside {
   flex-wrap: wrap;
 }
 .uploading-text {
-  font-size: 1.25rem;
+  display: flex;
+  font-size: 1rem;
   font-weight: bold;
 }
 .uploading-text span {
@@ -265,15 +271,15 @@ aside {
   animation: appear 1s forwards infinite;
 }
 
-.uploading-text span:nth-child(1) {
+.uploading-text span:nth-child(2) {
   animation-delay: 0.25s;
 }
 
-.uploading-text span:nth-child(2) {
+.uploading-text span:nth-child(3) {
   animation-delay: 0.5s;
 }
 
-.uploading-text span:nth-child(3) {
+.uploading-text span:nth-child(4) {
   animation-delay: 0.75s;
 }
 
@@ -756,6 +762,14 @@ aside.open {
   .uploadPercentage {
     font-size: large;
   }
+  .uploadsuccessindication,
+  .downloadsuccessindication,
+  .cancelindication {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: auto;
+  }
+  
   .filepathpart {
     font-size: 1.75rem;
     & svg {
