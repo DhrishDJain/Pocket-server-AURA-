@@ -769,7 +769,7 @@ aside.open {
     font-weight: 500;
     margin: auto;
   }
-  
+
   .filepathpart {
     font-size: 1.75rem;
     & svg {
@@ -894,6 +894,15 @@ aside.open {
   }
   .dropdown {
     width: fit-content;
+  }
+  .moveto {
+    left: -6rem;
+    top: 7rem;
+  }
+
+  .details {
+    top: -4rem;
+    left: -6rem;
   }
   .item-container {
     padding-top: 0.5rem;

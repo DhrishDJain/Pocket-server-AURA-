@@ -80,19 +80,7 @@ function show_file_in_dir(dir) {
       var newfolder = folder.cloneNode(true);
       var newfilepathpart = filepathpart.cloneNode(true);
       newfolder.classList.remove("hidden");
-      if (dir == "/") {
-        while (document.querySelector(".folder-list").children.length > 1) {
-          document
-            .querySelector(".folder-list")
-            .removeChild(document.querySelector(".folder-list").lastChild);
-        }
-        var sidemenufolder = document.querySelector(".sidefolder");
-        var newsidemenufolder = sidemenufolder.cloneNode(true);
-        newsidemenufolder.classList.remove("hidden");
-        newsidemenufolder.querySelector(".foldername").textContent =
-          files_on_server[dir][i]["folder"].replace(/.*\//, "");
-        document.querySelector(".folder-list").appendChild(newsidemenufolder);
-      }
+
       newfilepathpart.classList.remove("hidden");
       newfolder.querySelector(".filename").textContent = files_on_server[dir][
         i
@@ -138,6 +126,46 @@ function show_file_in_dir(dir) {
       document.querySelector(".item-container").appendChild(newitem);
     }
   }
+
+  if (dir == "/") {
+    while (document.querySelector(".folder-list").children.length > 1) {
+      document
+        .querySelector(".folder-list")
+        .removeChild(document.querySelector(".folder-list").lastChild);
+    }
+    document.querySelectorAll(".folder").forEach((folder, index) => {
+      if (index === 0) return;
+      var sidemenufolder = document.querySelector(".sidefolder");
+      var newsidemenufolder = sidemenufolder.cloneNode(true);
+      newsidemenufolder.classList.remove("hidden");
+      newsidemenufolder.querySelector(".foldername").textContent =
+        folder.querySelector(".filename").textContent;
+      document.querySelector(".folder-list").appendChild(newsidemenufolder);
+      newsidemenufolder.addEventListener("click", function (event) {
+        event.stopPropagation();
+        while (document.querySelector(".path").children.length > 2) {
+          document
+            .querySelector(".path")
+            .removeChild(document.querySelector(".path").lastChild);
+        }
+        const fullFolderPath = newsidemenufolder
+          .querySelector(".foldername")
+          .textContent.trim();
+        show_file_in_dir("/" + fullFolderPath + "/");
+        if (fullFolderPath.replace(/.*\//, "").length > 1) {
+          var newfilepathpart = document
+            .querySelector(".filepathpart")
+            .cloneNode(true);
+          newfilepathpart.classList.remove("hidden");
+          newfilepathpart.children[1].children[0].textContent =
+            fullFolderPath.replace(/.*\//, "");
+          document.querySelector(".path").appendChild(newfilepathpart);
+          document.querySelector(".openfolder").children[1].textContent =
+            fullFolderPath.replace(/.*\//, "");
+        }
+      });
+    });
+  }
   const itemContainer = document.querySelector(".item-container");
   const optiondropdown = document.querySelectorAll(".option-dropdown");
   const optionContents = document.querySelectorAll(".option-content");
@@ -164,7 +192,6 @@ function show_file_in_dir(dir) {
           ) {
             fillmovetodir("/");
           }
-          // console.log(event.target  );
         }
       });
       optionContents.forEach((content) => {
@@ -232,8 +259,14 @@ function file_operation(element, isfolder = false) {
   }
   if (action === "Move") {
     const moveto = parentElement.querySelector(".moveto");
-    moveto.classList.remove("hidden");
+    if (!parentElement.querySelector(".details").classList.contains("hidden")) {
+      parentElement.querySelector(".details").classList.add("hidden");
+    }
+    moveto.classList.toggle("hidden");
   } else if (action === "Details") {
+    if (!parentElement.querySelector(".moveto").classList.contains("hidden")) {
+      parentElement.querySelector(".moveto").classList.add("hidden");
+    }
     const details = parentElement.querySelector(".details");
     details.classList.toggle("hidden");
     var index;
@@ -267,6 +300,13 @@ function file_operation(element, isfolder = false) {
       files_on_server[finalpath][index]["creation_date"];
   } else if (action === "Rename") {
     // set compelet file path
+    if (
+      !parentElement.querySelector(".moveto").classList.contains("hidden") ||
+      !parentElement.querySelector(".details").classList.contains("hidden")
+    ) {
+      parentElement.querySelector(".moveto").classList.add("hidden");
+      parentElement.querySelector(".details").classList.add("hidden");
+    }
     parentElement.querySelector(".filename").classList.add("hidden");
     const renameto = document.createElement("input");
     renameto.type = "text";
@@ -288,15 +328,6 @@ function file_operation(element, isfolder = false) {
         } else {
           file_action_param = finalpath + renameto.value;
         }
-
-        console.log(
-          JSON.stringify({
-            action: action,
-            folder_path: finalpath,
-            file_action_parameter: file_action_param,
-            path: filename,
-          })
-        );
         connction.send(
           JSON.stringify({
             action: action,

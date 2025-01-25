@@ -324,7 +324,6 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
     }
   }
 }
-// ==================================================HANDEL DOWNLOAD==========================================================
 
 String getMimeType(String filename) {
   if (filename.endsWith(".html")) return "text/html";
@@ -382,6 +381,8 @@ void setup() {
     [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
       handleFileUpload(request, filename, index, data, len, final);
     });
+    
+  // ==================================================HANDEL DOWNLOAD==========================================================
 
   server.on("/download", HTTP_GET, [](AsyncWebServerRequest *request) {
     String filename = request->getParam("file")->value();
