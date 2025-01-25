@@ -94,7 +94,10 @@ function show_file_in_dir(dir) {
             if (fullFolderPath.replace(/.*\//, "").length > 1) {
               newfilepathpart.children[1].children[0].textContent =
                 fullFolderPath.replace(/.*\//, "");
-              document.querySelector(".path").appendChild(newfilepathpart);
+
+              document.querySelectorAll(".path").forEach((path) => {
+                path.appendChild(newfilepathpart.cloneNode(true));
+              });
               document.querySelector(".openfolder").children[1].textContent =
                 fullFolderPath.replace(/.*\//, "");
             }
@@ -143,11 +146,11 @@ function show_file_in_dir(dir) {
       document.querySelector(".folder-list").appendChild(newsidemenufolder);
       newsidemenufolder.addEventListener("click", function (event) {
         event.stopPropagation();
-        while (document.querySelector(".path").children.length > 2) {
-          document
-            .querySelector(".path")
-            .removeChild(document.querySelector(".path").lastChild);
-        }
+        document.querySelectorAll(".path").forEach((path) => {
+          while (path.children.length > 2) {
+            path.removeChild(path.lastChild);
+          }
+        });
         const fullFolderPath = newsidemenufolder
           .querySelector(".foldername")
           .textContent.trim();
@@ -159,7 +162,9 @@ function show_file_in_dir(dir) {
           newfilepathpart.classList.remove("hidden");
           newfilepathpart.children[1].children[0].textContent =
             fullFolderPath.replace(/.*\//, "");
-          document.querySelector(".path").appendChild(newfilepathpart);
+          document.querySelectorAll(".path").forEach((path) => {
+            path.appendChild(newfilepathpart.cloneNode(true));
+          });
           document.querySelector(".openfolder").children[1].textContent =
             fullFolderPath.replace(/.*\//, "");
         }
@@ -235,7 +240,9 @@ function file_operation(element, isfolder = false) {
   let action = element.textContent.trim();
   let file_action_param;
   let parentElement = element.parentNode.parentNode.parentNode;
-  const elements = document.querySelectorAll(".filepathpart");
+  const elements = document
+    .querySelector(".mobilepath")
+    .querySelectorAll(".filepathpart");
   let finalpath = "";
   // find file path
   for (let i = 0; i < elements.length; i++) {
@@ -484,13 +491,6 @@ function file_operation(element, isfolder = false) {
     };
     xhr.send();
   } else {
-    console.log(
-      JSON.stringify({
-        action: action,
-        folder_path: finalpath,
-        path: filename,
-      })
-    );
     connction.send(
       JSON.stringify({
         action: action,
@@ -502,7 +502,9 @@ function file_operation(element, isfolder = false) {
 }
 
 function createdir(foldername) {
-  const elements = document.querySelectorAll(".filepathpart");
+  const elements = document
+    .querySelector(".mobilepath")
+    .querySelectorAll(".filepathpart");
   let finalpath = "";
   // find file path
   for (let i = 0; i < elements.length; i++) {
@@ -512,13 +514,7 @@ function createdir(foldername) {
   if (finalpath.length == 0) {
     finalpath = "/";
   }
-  console.log(
-    JSON.stringify({
-      action: "Create_Folder",
-      folder_path: finalpath,
-      path: foldername,
-    })
-  );
+
   connction.send(
     JSON.stringify({
       action: "Create_Folder",
@@ -594,7 +590,9 @@ function fillmovetodir(dir) {
     // Remove any existing event listener before adding a new one
     const newConfirmMoveListener = (event) => {
       event.stopPropagation();
-      const elements = document.querySelectorAll(".filepathpart");
+      const elements = document
+        .querySelector(".mobilepath")
+        .querySelectorAll(".filepathpart");
 
       let finalpath = "";
       for (let i = 0; i < elements.length; i++) {
@@ -645,14 +643,7 @@ function fillmovetodir(dir) {
           movetopath +
           selectedfile.querySelector(".filename").textContent;
       }
-      console.log(
-        JSON.stringify({
-          action: "Rename",
-          folder_path: finalpath,
-          file_action_parameter: file_action_param,
-          path: filename,
-        })
-      );
+
       connction.send(
         JSON.stringify({
           action: "Rename",

@@ -7,7 +7,7 @@
     <title>AURA_DB</title>
 
     <link rel="stylesheet" href="style37.css" />
-    <script type="text/javascript" src="script72.js"></script>
+    <script type="text/javascript" src="script7.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -294,7 +294,8 @@
                   .classList.remove("hidden");
                 document.querySelector(".cancel").classList.remove("hidden");
                 document.querySelector(".uploading").classList.remove("hidden");
-                document.querySelector(".processname").textContent="UPLOADING";
+                document.querySelector(".processname").textContent =
+                  "UPLOADING";
 
                 // zipping file
                 const zip = new JSZip();
@@ -440,10 +441,10 @@
 
                 document.querySelector(".cancel").onclick = function (event) {
                   event.stopPropagation();
-    
+
                   if (xhr) {
                     xhr.abort(); // Abort the upload
-    
+
                     console.log("Deleting ", currentFilename, " file");
                     connction.send(
                       JSON.stringify({
@@ -452,7 +453,9 @@
                         path: currentFilename + ".zip",
                       })
                     );
-                    document.querySelector(".uploading").classList.add("hidden");
+                    document
+                      .querySelector(".uploading")
+                      .classList.add("hidden");
                     document.querySelector(".cancelindication").textContent =
                       "Upload Cancled";
                     document
@@ -462,7 +465,7 @@
                       document
                         .querySelector(".uploadStatus")
                         .classList.add("hidden");
-    
+
                       document.querySelector(".cancel").classList.add("hidden");
                       document
                         .querySelector(".cancelindication")
@@ -472,7 +475,6 @@
                 };
                 xhr.send(formData);
               });
-
           </script>
         </div>
         <div class="filepath">
@@ -489,7 +491,7 @@
               />
             </svg>
           </div>
-          <div class="path">
+          <div class="path laptoppath">
             <div class="home">
               <div>
                 <span> Home </span>
@@ -558,13 +560,48 @@
             </svg>
             <span class="currentopenedfolder">Home</span>
           </div>
+          <div class="path mobilepath">
+            <div class="home">
+              <div>
+                <span> Home </span>
+              </div>
+            </div>
+            <div class="filepathpart hidden">
+              <svg
+                fill="#fff"
+                width="2.25rem"
+                viewBox="-192 -192 2304.00 2304.00"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke="#CCCCCC"
+                  stroke-width="3.84"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M568.13.012 392 176.142l783.864 783.989L392 1743.87 568.13 1920l960.118-959.87z"
+                    fill-rule="evenodd"
+                  ></path>
+                </g>
+              </svg>
+              <div class="file-location">
+                <span></span>
+              </div>
+            </div>
+          </div>
           <script>
             document
               .querySelector(".back")
               .addEventListener("click", (event) => {
                 event.stopPropagation();
                 let finalpath = "";
-                const elements = document.querySelectorAll(".filepathpart");
+                const elements = document
+                  .querySelector(".mobilepath")
+                  .querySelectorAll(".filepathpart");
                 for (let i = 0; i < elements.length - 1; i++) {
                   finalpath += elements[i].children[1].textContent.replace(
                     /\s/g,
@@ -579,17 +616,19 @@
                   finalpath = "/";
                 }
                 show_file_in_dir(finalpath);
-                if (document.querySelector(".path").children.length > 2) {
-                  document
-                    .querySelector(".path")
-                    .removeChild(document.querySelector(".path").lastChild);
-                }
+                document.querySelectorAll(".path").forEach((path) => {
+                  if (path.children.length > 2) {
+                    path.removeChild(path.lastChild);
+                  }
+                });
                 let currentopened = finalpath.split("/");
                 currentopened.pop();
-                document.querySelector(".currentopenedfolder").textContent =
-                  document.querySelector(".path").children.length == 2
-                    ? "Home"
-                    : currentopened.pop();
+                document.querySelectorAll(".path").forEach((path) => {
+                  document.querySelector(".currentopenedfolder").textContent =
+                    path.children.length == 2
+                      ? "Home"
+                      : currentopened.pop();
+                });
               });
           </script>
           <div
@@ -690,6 +729,7 @@
           <span class="typeheader header" onclick="sortItems(this)">Type</span>
           <span class="sizeheader header" onclick="sortItems(this)">Size</span>
         </div>
+
         <div class="item-container noscroll">
           <div class="card hidden">
             <div style="margin: 0 auto" class="icon">
