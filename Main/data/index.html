@@ -92,6 +92,7 @@
               name="file"
               onchange="document
               .getElementById('uploadButton').click()"
+              multiple
             />
             <button type="submit" id="uploadButton">Upload and Compress</button>
           </form>
@@ -254,7 +255,7 @@
           </div>
 
           <script>
-            let currentFilename = "";
+            let currentFilenames;
             let xhr;
             let finalpath = "";
 
@@ -279,16 +280,15 @@
               .getElementById("uploadForm")
               .addEventListener("submit", async (event) => {
                 event.preventDefault();
-                const uploadform = document.getElementById("uploadForm");
                 const fileInput = document.getElementById("fileholder");
-                const file = fileInput.files[0];
+                const files = fileInput.files;
 
-                if (!file) {
-                  alert("Please select a file to upload.");
+                if (files.length === 0) {
+                  alert("Please select files to upload.");
                   return;
                 }
 
-                // show uploading status bar
+                // Show uploading status bar
                 document
                   .querySelector(".uploadStatus")
                   .classList.remove("hidden");
@@ -296,21 +296,15 @@
                 document.querySelector(".uploading").classList.remove("hidden");
                 document.querySelector(".processname").textContent =
                   "UPLOADING";
-
-                // zipping file
-                const zip = new JSZip();
-                zip.file(file.name, file, {
-                  compression: "DEFLATE",
-                  compressionOptions: { level: 9 },
-                });
-                const zipBlob = await zip.generateAsync({ type: "blob" });
-                const formData = new FormData();
+                let currentFilename;
+                // Prepare to upload each file
                 const date = new Date();
-
-                const elements = document.querySelectorAll(".filepathpart");
-
+                const elements = document
+                  .querySelector(".mobilepath")
+                  .querySelectorAll(".filepathpart");
                 finalpath = "";
-                // find file path
+
+                // Find file path
                 for (let i = 0; i < elements.length; i++) {
                   finalpath += elements[i].children[1].textContent.replace(
                     /\s/g,
@@ -318,10 +312,42 @@
                   );
                   finalpath += "/";
                 }
-                if (finalpath.length == 0) {
+                if (finalpath.length === 0) {
                   finalpath = "/";
                 }
-                // set compelet file path
+
+                // Start uploading the first file
+                uploadNextFile(files, 0);
+              });
+            function uploadNextFile(files, index) {
+              if (index >= files.length) {
+                // All files uploaded
+                document.querySelector(".uploading").classList.add("hidden");
+                document
+                  .querySelector(".uploadsuccessindication")
+                  .classList.remove("hidden");
+                setTimeout(() => {
+                  document.querySelector(".cancel").classList.add("hidden");
+                  document
+                    .querySelector(".uploadsuccessindication")
+                    .classList.add("hidden");
+                  document
+                    .querySelector(".uploadStatus")
+                    .classList.add("hidden");
+                }, 2000);
+                return;
+              }
+
+              const file = files[index]; // Get the current file to upload
+              const zip = new JSZip();
+              // Zipping file
+              zip.file(file.name, file, {
+                compression: "DEFLATE",
+                compressionOptions: { level: 9 },
+              });
+
+              zip.generateAsync({ type: "blob" }).then(async (zipBlob) => {
+                const formData = new FormData();
                 const filename =
                   finalpath +
                   file.name.split(".")[0] +
@@ -329,12 +355,17 @@
                   file.name.split(".").pop() +
                   "#";
                 currentFilename = filename;
-                // add file to form data
+
+                // Add file to form data
                 formData.append("file", zipBlob, filename);
-                //file_data json
+                document.querySelector(".uploadname").innerHTML = file.name;
+                document.querySelector(".totalchunk").innerHTML =
+                  file_size_conversion(zipBlob.size);
+
+                // File metadata
                 const jsonData = {
                   filename: filename,
-                  creation_date: await formatDate(date),
+                  creation_date: await formatDate(new Date()),
                   modified_date: await formatDate(new Date(file.lastModified)),
                   extension: file.name.split(".").pop(),
                 };
@@ -345,22 +376,16 @@
                   }),
                   "file_data.json"
                 );
-
+                let startTime = Date.now();
+                let uploadedBytes = 0;
                 // Create XMLHttpRequest for upload
                 xhr = new XMLHttpRequest();
                 xhr.open("POST", "/handleupload", true);
-                const bars = document.querySelectorAll(".bar");
 
+                const bars = document.querySelectorAll(".bar");
                 bars.forEach((bar) => {
                   bar.classList.add("hidden");
                 });
-                document.querySelector(".uploadname").innerHTML = file.name;
-                document.querySelector(".totalchunk").innerHTML =
-                  file_size_conversion(zipBlob.size);
-
-                // Variables to calculate upload speed
-                let startTime = Date.now();
-                let uploadedBytes = 0;
 
                 // Start upload
                 xhr.upload.onprogress = function (event) {
@@ -400,36 +425,16 @@
                       file_size_conversion(zipBlob.size);
                     document.querySelector(".speed").innerText = `0KB/s`;
 
+                    // Notify server about the uploaded file
                     connction.send(
-                      JSON.stringify({
-                        action: "sendJson",
-                        path: finalpath,
-                      })
+                      JSON.stringify({ action: "sendJson", path: finalpath })
                     );
-                    document
-                      .querySelector(".uploading")
-                      .classList.add("hidden");
-
-                    document
-                      .querySelector(".uploadsuccessindication")
-                      .classList.remove("hidden");
-                    setTimeout(() => {
-                      document.querySelector(".cancel").classList.add("hidden");
-                      document
-                        .querySelector(".uploadsuccessindication")
-                        .classList.add("hidden");
-                      document
-                        .querySelector(".uploading")
-                        .classList.remove("hidden");
-                      document
-                        .querySelector(".uploadStatus")
-                        .classList.add("hidden");
-                    }, 2000);
+                    // Successfully uploaded, proceed to the next file
+                    uploadNextFile(files, index + 1);
                   } else {
                     console.error("Upload failed with status:", xhr.status);
                     alert("Upload failed. Please try again.");
                   }
-                  currentFilename = "";
                 };
 
                 xhr.onerror = function () {
@@ -438,14 +443,11 @@
                     "Upload failed. Please check your connection and try again."
                   );
                 };
-
                 document.querySelector(".cancel").onclick = function (event) {
                   event.stopPropagation();
-
                   if (xhr) {
                     xhr.abort(); // Abort the upload
-
-                    console.log("Deleting ", currentFilename, " file");
+                    console.log("Deleting ", currentFilename, " files");
                     connction.send(
                       JSON.stringify({
                         action: "abort_upload",
@@ -457,7 +459,7 @@
                       .querySelector(".uploading")
                       .classList.add("hidden");
                     document.querySelector(".cancelindication").textContent =
-                      "Upload Cancled";
+                      "Upload Canceled";
                     document
                       .querySelector(".cancelindication")
                       .classList.remove("hidden");
@@ -465,7 +467,6 @@
                       document
                         .querySelector(".uploadStatus")
                         .classList.add("hidden");
-
                       document.querySelector(".cancel").classList.add("hidden");
                       document
                         .querySelector(".cancelindication")
@@ -475,6 +476,8 @@
                 };
                 xhr.send(formData);
               });
+            }
+            // Cancel upload functionality
           </script>
         </div>
         <div class="filepath">
@@ -625,9 +628,7 @@
                 currentopened.pop();
                 document.querySelectorAll(".path").forEach((path) => {
                   document.querySelector(".currentopenedfolder").textContent =
-                    path.children.length == 2
-                      ? "Home"
-                      : currentopened.pop();
+                    path.children.length == 2 ? "Home" : currentopened.pop();
                 });
               });
           </script>
@@ -886,7 +887,7 @@
                           ></path>
                         </g>
                       </svg>
-                      <span class="current-loc">level1</span>
+                      <span class="current-loc"></span>
                     </div>
                   </div>
                   <div class="folders noscroll">
@@ -970,21 +971,7 @@
                   </svg>
                   Rename
                 </span>
-                <span onclick="file_operation(this)" class="option">
-                  <svg
-                    width="20"
-                    height="19"
-                    viewBox="0 0 20 19"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5.61798 4.4L8.41448 0.775C8.61423 0.508333 8.85144 0.3125 9.12609 0.1875C9.40075 0.0625 9.68789 0 9.98752 0C10.2871 0 10.5743 0.0625 10.8489 0.1875C11.1236 0.3125 11.3608 0.508333 11.5605 0.775L14.3571 4.4L18.6017 5.825C19.0345 5.95833 19.3758 6.20417 19.6255 6.5625C19.8752 6.92083 20 7.31667 20 7.75C20 7.95 19.9709 8.15 19.9126 8.35C19.8543 8.55 19.7586 8.74167 19.6255 8.925L16.8789 12.825L16.9788 16.925C16.9954 17.5083 16.804 18 16.4045 18.4C16.005 18.8 15.5389 19 15.0062 19C14.973 19 14.7898 18.975 14.4569 18.925L9.98752 17.675L5.5181 18.925C5.43487 18.9583 5.34332 18.9792 5.24345 18.9875C5.14357 18.9958 5.05202 19 4.96879 19C4.43612 19 3.97004 18.8 3.57054 18.4C3.17104 18 2.97961 17.5083 2.99625 16.925L3.09613 12.8L0.374532 8.925C0.241365 8.74167 0.145651 8.55 0.0873908 8.35C0.0291303 8.15 0 7.95 0 7.75C0 7.33333 0.120682 6.94583 0.362047 6.5875C0.603412 6.22917 0.940491 5.975 1.37328 5.825L5.61798 4.4ZM6.84145 6.125L1.9975 7.725L5.09363 12.2L4.99376 16.975L9.98752 15.6L14.9813 17L14.8814 12.2L17.9775 7.775L13.1336 6.125L9.98752 2L6.84145 6.125Z"
-                      fill="white"
-                    />
-                  </svg>
-                  Add to starred
-                </span>
+
                 <span onclick="file_operation(this)" class="option">
                   <svg
                     width="20"
@@ -1111,7 +1098,6 @@
                   </svg>
                   Move
                 </span>
-
                 <div class="moveto hidden">
                   <div class="movingpath noscroll">
                     <svg
@@ -1193,7 +1179,6 @@
                     </div>
                   </div>
                 </div>
-
                 <span onclick="file_operation(this,true)" class="option">
                   <svg
                     width="20"
@@ -1233,36 +1218,6 @@
                     />
                   </svg>
                   Rename
-                </span>
-                <span onclick="file_operation(this,true)" class="option">
-                  <svg
-                    width="20"
-                    height="19"
-                    viewBox="0 0 20 19"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5.61798 4.4L8.41448 0.775C8.61423 0.508333 8.85144 0.3125 9.12609 0.1875C9.40075 0.0625 9.68789 0 9.98752 0C10.2871 0 10.5743 0.0625 10.8489 0.1875C11.1236 0.3125 11.3608 0.508333 11.5605 0.775L14.3571 4.4L18.6017 5.825C19.0345 5.95833 19.3758 6.20417 19.6255 6.5625C19.8752 6.92083 20 7.31667 20 7.75C20 7.95 19.9709 8.15 19.9126 8.35C19.8543 8.55 19.7586 8.74167 19.6255 8.925L16.8789 12.825L16.9788 16.925C16.9954 17.5083 16.804 18 16.4045 18.4C16.005 18.8 15.5389 19 15.0062 19C14.973 19 14.7898 18.975 14.4569 18.925L9.98752 17.675L5.5181 18.925C5.43487 18.9583 5.34332 18.9792 5.24345 18.9875C5.14357 18.9958 5.05202 19 4.96879 19C4.43612 19 3.97004 18.8 3.57054 18.4C3.17104 18 2.97961 17.5083 2.99625 16.925L3.09613 12.8L0.374532 8.925C0.241365 8.74167 0.145651 8.55 0.0873908 8.35C0.0291303 8.15 0 7.95 0 7.75C0 7.33333 0.120682 6.94583 0.362047 6.5875C0.603412 6.22917 0.940491 5.975 1.37328 5.825L5.61798 4.4ZM6.84145 6.125L1.9975 7.725L5.09363 12.2L4.99376 16.975L9.98752 15.6L14.9813 17L14.8814 12.2L17.9775 7.775L13.1336 6.125L9.98752 2L6.84145 6.125Z"
-                      fill="white"
-                    />
-                  </svg>
-                  Add to starred
-                </span>
-                <span onclick="file_operation(this,true)" class="option">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M9 15H11V9H9V15ZM10 7C10.2833 7 10.5208 6.90417 10.7125 6.7125C10.9042 6.52083 11 6.28333 11 6C11 5.71667 10.9042 5.47917 10.7125 5.2875C10.5208 5.09583 10.2833 5 10 5C9.71667 5 9.47917 5.09583 9.2875 5.2875C9.09583 5.47917 9 5.71667 9 6C9 6.28333 9.09583 6.52083 9.2875 6.7125C9.47917 6.90417 9.71667 7 10 7ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z"
-                      fill="white"
-                    />
-                  </svg>
-                  Details
                 </span>
                 <span
                   onclick="file_operation(this,true)"
