@@ -57,6 +57,7 @@ connction.onmessage = (event) => {
   }
   console.log("Updated object:", files_on_server);
 };
+
 function list_dir_in_json() {
   for (var x in files_on_server) {
     dir.push(x);
@@ -181,7 +182,11 @@ function show_file_in_dir(dir) {
         if (!optiondropdown[index].contains(event.target)) {
           optionContent.classList.add("hidden");
           optionContent.querySelector(".moveto").classList.add("hidden");
-          optionContent.querySelector(".details").classList.add("hidden");
+          if (
+            !optionContent.parentNode.parentNode.classList.contains("folder")
+          ) {
+            optionContent.querySelector(".details").classList.add("hidden");
+          }
           while (
             optionContent.querySelector(".movingpath").children.length > 3
           ) {
@@ -372,7 +377,9 @@ function file_operation(element, isfolder = false) {
     document.querySelector(".processname").textContent = "DOWNLOADING";
 
     const fileName = parentElement.querySelector(".filename").textContent;
-    const elements = document.querySelectorAll(".filepathpart");
+    const elements = document
+      .querySelector(".mobilepath")
+      .querySelectorAll(".filepathpart");
     finalpath = "";
     for (let i = 0; i < elements.length; i++) {
       finalpath += elements[i].children[1].textContent.replace(/\s/g, "");
@@ -501,7 +508,7 @@ function file_operation(element, isfolder = false) {
   }
 }
 
-function createdir(foldername) {
+async function createdir(foldername) {
   const elements = document
     .querySelector(".mobilepath")
     .querySelectorAll(".filepathpart");
@@ -659,3 +666,5 @@ function fillmovetodir(dir) {
     confirmmove.addEventListener("click", confirmmove.listener);
   });
 }
+
+

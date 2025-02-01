@@ -3,154 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="/jszip.min.js"></script>
-    <title>File Download from ESP32 with Progress</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      input[type="text"] {
-        width: 300px;
-        padding: 10px;
-        margin-right: 10px;
-      }
-      input[type="submit"] {
-        padding: 10px 20px;
-      }
-      #progressContainer {
-        width: 100%;
-        background-color: #f3f3f3;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin-top: 20px;
-        display: none; /* Hidden by default */
-      }
-      #progressBar {
-        width: 0;
-        height: 30px;
-        background-color: #4caf50;
-        text-align: center;
-        line-height: 30px;
-        color: white;
-        border-radius: 5px;
-      }
-    </style>
+    <title>Folder Selection</title>
   </head>
   <body>
-    <h1>Download File from ESP32</h1>
-    <form id="downloadForm">
-      <input type="text" id="fileName" placeholder="Enter file name" required />
-      <input type="submit" value="Download" />
-    </form>
-    <div id="progressContainer">
-      <div id="progressBar">0%</div>
-    </div>
-    <div id="message"></div>
-    <div id="links"></div>
-    <button id="cancelDownload" disabled>Cancel Download</button>
+    <h1>Select a Folder</h1>
+    <input type="file" id="folderInput" webkitdirectory multiple />
+    <button id="submitBtn">Submit</button>
+
     <script>
       document
-        .getElementById("downloadForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault(); // Prevent the form from submitting the traditional way
+        .getElementById("submitBtn")
+        .addEventListener("click", function () {
+          const folderInput = document.getElementById("folderInput");
+          const files = folderInput.files;
 
-          const fileName = document.getElementById("fileName").value;
-          const url = `http://192.168.4.1/download?file=${encodeURIComponent(
-            "/" + fileName
-          )}`; // Change IP if needed
+          if (files.length > 0) {
+            const folderStructure = {};
 
-          // Show the progress bar
-          const progressContainer =
-            document.getElementById("progressContainer");
-          const progressBar = document.getElementById("progressBar");
-          progressContainer.style.display = "block";
-          progressBar.style.width = "0%";
-          progressBar.innerText = "0%";
+            // Build the folder structure
+            for (const file of files) {
+              const pathParts = file.webkitRelativePath.split("/");
+              const fileName = pathParts.pop(); // Get the file name
+              const folderPath = pathParts.join("/") + "/"; // Rebuild the folder path
 
-          // Create a new XMLHttpRequest
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", url, true);
-          xhr.responseType = "blob"; // Expect a binary file
+              // Create the file object
+              const fileObject = {
+                filename: fileName,
+                size: file.size,
+                extension: fileName.split(".").pop(), // Get the file extension
+                creation_date: new Date(file.lastModified).toLocaleString(
+                  "en-GB",
+                  { timeZone: "UTC" }
+                ), // Get creation date
+                modified_date: new Date(file.lastModified).toLocaleString(
+                  "en-GB",
+                  { timeZone: "UTC" }
+                ), // Get modified date
+              };
 
-          // Update progress bar
-          xhr.onprogress = function (event) {
-            if (event.lengthComputable) {
-              const percentComplete = (event.loaded / event.total) * 100;
-              progressBar.style.width = percentComplete + "%";
-              progressBar.innerText = Math.round(percentComplete) + "%";
+              // console.log(pathParts);
+              // If the folder path doesn't exist, create it
+              const parentPath = pathParts.slice(0, -1).join("/") + "/";
+             
+              if (!folderStructure[folderPath]) {
+             
+                folderStructure[folderPath] = [];
+              }
+
+              // Add the file object to the corresponding folder
+              folderStructure[folderPath].push(fileObject);
             }
-          };
+            console.log(
+              "Folder Structure:",
+              JSON.stringify(folderStructure, null, 2)
+            );
+            // Log the folder structure to verify its contents
 
-          // Handle download completion
-          xhr.onload = function () {
-            if (xhr.status === 200) {
-              const arrayBuffer = xhr.response;
-
-              // Load the zip file using JSZip
-              const zip = new JSZip();
-              zip.loadAsync(arrayBuffer).then((zip) => {
-                const linksContainer = document.getElementById("links");
-                linksContainer.innerHTML = ""; // Clear previous links
-
-                // Extract files and create download links
-                Object.keys(zip.files).forEach((filename) => {
-                  zip.files[filename].async("blob").then((fileData) => {
-                    const link = document.createElement("a");
-                    link.href = URL.createObjectURL(fileData);
-                    link.download = filename; // Set the filename for download
-                    link.innerText = `Download ${filename}`;
-                    linksContainer.appendChild(link);
-                    linksContainer.appendChild(document.createElement("br")); // Line break
-                  });
-                });
-              });
-            } else {
-              document.getElementById("message").innerText =
-                "Error downloading file.";
-            }
-          };
-
-          // Handle errors
-          xhr.onerror = function () {
-            console.error("Request failed.");
-            document.getElementById("message").innerText = "Download failed!";
-          };
-          document.getElementById("cancelDownload").disabled = false;
-
-          // Add event listener for cancel button
-          document.getElementById("cancelDownload").onclick = function () {
-            xhr.abort(); // Cancel the download
-            console.log("Download canceled.");
-            document.getElementById("cancelDownload").disabled = true; // Disable cancel button after cancellation
-          };
-          xhr.send(); // Send the request
+            // Send the folder structure to the server
+            // fetch('/create-folder', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify(folderStructure)
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     console.log('Success:', data);
+            //     alert('Folders created successfully!');
+            // })
+            // .catch((error) => {
+            //     console.error('Error:', error);
+            //     alert('Error creating folders.');
+            // });
+          } else {
+            alert("Please select a folder.");
+          }
         });
-
-      function loadZip(blob) {
-        const zip = new JSZip();
-        return zip
-          .loadAsync(blob)
-          .then((zip) => {
-            const linksContainer = document.getElementById("links");
-            linksContainer.innerHTML = ""; // Clear previous links
-
-            // Extract files and create download links
-            Object.keys(zip.files).forEach((filename) => {
-              zip.files[filename].async("blob").then((fileData) => {
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(fileData);
-                link.download = filename; // Set the filename for download
-                link.innerText = `Download ${filename}`;
-                linksContainer.appendChild(link);
-                linksContainer.appendChild(document.createElement("br")); // Line break
-              });
-            });
-          })
-          .catch((error) =>
-            console.error("Error loading or unzipping the file:", error)
-          );
-      }
     </script>
   </body>
 </html>

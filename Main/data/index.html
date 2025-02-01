@@ -94,7 +94,25 @@
               .getElementById('uploadButton').click()"
               multiple
             />
-            <button type="submit" id="uploadButton">Upload and Compress</button>
+
+            <button type="submit" id="uploadButton">Upload</button>
+          </form>
+          <form
+            id="uploadFolderForm"
+            action="/handleupload"
+            method="POST"
+            class="hidden"
+            enctype="multipart/form-data"
+          >
+            <input
+              type="file"
+              id="folderholder"
+              name="folder"
+              onchange="document
+              .getElementById('uploadFolderButton').click()"
+              webkitdirectory
+            />
+            <button type="submit" id="uploadFolderButton">Upload Folder</button>
           </form>
           <div class="create_options hidden">
             <span
@@ -151,7 +169,9 @@
               </svg>
               Upload File</span
             >
-            <span class="upload_folder"
+            <span
+              class="upload_folder"
+              onclick="document.getElementById('folderholder').click()"
               ><svg
                 width="31"
                 height="26"
@@ -258,7 +278,7 @@
             let currentFilenames;
             let xhr;
             let finalpath = "";
-
+            let defaultOnMessage = connction.onmessage;
             document.querySelector(".addbtn").addEventListener("click", () => {
               document
                 .querySelector(".create_options")
@@ -319,6 +339,7 @@
                 // Start uploading the first file
                 uploadNextFile(files, 0);
               });
+
             function uploadNextFile(files, index) {
               if (index >= files.length) {
                 // All files uploaded
@@ -477,7 +498,245 @@
                 xhr.send(formData);
               });
             }
-            // Cancel upload functionality
+
+            document
+              .getElementById("uploadFolderForm")
+              .addEventListener("submit", async (event) => {
+                event.preventDefault();
+                finalpath = "";
+                const fileInput = document.getElementById("folderholder");
+                const files = fileInput.files;
+
+                if (files.length === 0) {
+                  alert("Please select files to upload.");
+                  return;
+                }
+                // Show uploading status bar
+                document
+                  .querySelector(".uploadStatus")
+                  .classList.remove("hidden");
+                document.querySelector(".cancel").classList.remove("hidden");
+                document.querySelector(".uploading").classList.remove("hidden");
+                document.querySelector(".processname").textContent =
+                  "UPLOADING";
+
+                const elements = document
+                  .querySelector(".mobilepath")
+                  .querySelectorAll(".filepathpart");
+                finalpath = "";
+                // Find folder path in which new folder is to be uploaded
+                for (let i = 0; i < elements.length; i++) {
+                  finalpath += elements[i].children[1].textContent.replace(
+                    /\s/g,
+                    ""
+                  );
+                  finalpath += "/";
+                }
+                if (finalpath.length === 0) {
+                  finalpath = "/";
+                }
+                // Creating Folders and Subfolder that are in uploading folder
+                const folderArray = [];
+                let prevfolder = "";
+                for (let i = 0; i < files.length; i++) {
+                  const file = files[i];
+                  const pathParts = file.webkitRelativePath.split("/");
+                  pathParts.pop();
+                  const folderPath = pathParts.join("/") + "/";
+                  if (folderPath != prevfolder) {
+                    prevfolder = folderPath;
+                    folderArray.push(folderPath);
+                    await createdir(folderPath);
+                  }
+                }
+                let lastfolderinFolderArray = folderArray.pop();
+                let Lastuploadingfolder = finalpath + lastfolderinFolderArray;
+                let Lastfoldercreated = false;
+
+                connction.onmessage = (event) => {
+                  if (event.data == " " || event.data == undefined) {
+                    console.log("Received an empty or undefined data");
+                    return;
+                  }
+                  const tempobj = JSON.parse(event.data);
+                  const firstKey = Object.keys(tempobj)[0];
+                  let lastkey;
+                  if (firstKey === "/") {
+                    if (tempobj.hasOwnProperty("/" + lastfolderinFolderArray)) {
+                      lastkey = "/" + lastfolderinFolderArray;
+                    }
+                  } else {
+                    lastkey = Object.keys(tempobj).pop();
+                  }
+                  if (lastkey === Lastuploadingfolder && !Lastfoldercreated) {
+                    Lastfoldercreated = true;
+                    uploadNextFolderFile(files, 0);
+
+                    return;
+                  }
+                };
+              });
+
+            function uploadNextFolderFile(files, index) {
+              if (index >= files.length) {
+                // All files uploaded
+                document.querySelector(".uploading").classList.add("hidden");
+                document
+                  .querySelector(".uploadsuccessindication")
+                  .classList.remove("hidden");
+                connction.onmessage = defaultOnMessage;
+                connction.send(
+                  JSON.stringify({ action: "sendJson", path: finalpath })
+                );
+                console.log("received???");
+                setTimeout(() => {
+                  document.querySelector(".cancel").classList.add("hidden");
+                  document
+                    .querySelector(".uploadsuccessindication")
+                    .classList.add("hidden");
+                  document
+                    .querySelector(".uploadStatus")
+                    .classList.add("hidden");
+                }, 2000);
+                return;
+              }
+
+              const file = files[index]; // Get the current file to upload
+              const zip = new JSZip();
+              // Zipping file
+              zip.file(file.name, file, {
+                compression: "DEFLATE",
+                compressionOptions: { level: 9 },
+              });
+              zip.generateAsync({ type: "blob" }).then(async (zipBlob) => {
+                const formData = new FormData();
+                const filename =
+                  finalpath +
+                  file.webkitRelativePath.split(".")[0] +
+                  "#" +
+                  file.webkitRelativePath.split(".").pop() +
+                  "#";
+                currentFilename = filename;
+
+                // Add file to form data
+                formData.append("file", zipBlob, filename);
+                document.querySelector(".uploadname").innerHTML = file.name;
+                document.querySelector(".totalchunk").innerHTML =
+                  file_size_conversion(zipBlob.size);
+
+                // File metadata
+                const jsonData = {
+                  filename: filename,
+                  creation_date: await formatDate(new Date()),
+                  modified_date: await formatDate(new Date(file.lastModified)),
+                  extension: file.name.split(".").pop(),
+                };
+                // console.log(JSON.stringify(jsonData));
+                formData.append(
+                  "metadata",
+                  new Blob([JSON.stringify(jsonData)], {
+                    type: "application/json",
+                  }),
+                  "file_data.json"
+                );
+                let startTime = Date.now();
+                let uploadedBytes = 0;
+                // Create XMLHttpRequest for upload
+                xhr = new XMLHttpRequest();
+                xhr.open("POST", "/handleupload", true);
+
+                const bars = document.querySelectorAll(".bar");
+                bars.forEach((bar) => {
+                  bar.classList.add("hidden");
+                });
+
+                // Start upload
+                xhr.upload.onprogress = function (event) {
+                  if (event.lengthComputable) {
+                    const percentage = Math.round(
+                      (event.loaded / event.total) * 100
+                    );
+                    document.querySelector(".chunkedsend").innerHTML =
+                      file_size_conversion(event.loaded);
+                    document.querySelector(
+                      ".uploadPercentage"
+                    ).innerText = `${percentage}%`;
+                    bars.forEach((bar, index) => {
+                      if (index < percentage / 10 && index != 9) {
+                        bar.classList.remove("hidden");
+                      }
+                    });
+                    // Calculate upload speed
+                    const currentTime = Date.now();
+                    const timeElapsed = (currentTime - startTime) / 1000; // in seconds
+                    uploadedBytes = event.loaded; // total uploaded bytes
+                    const speed = uploadedBytes / timeElapsed; // bytes per second
+                    const speedInKB = (speed / 1024).toFixed(2); // convert to KB/s
+                    document.querySelector(
+                      ".speed"
+                    ).innerText = `${speedInKB} KB/s`;
+                  }
+                };
+
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                    bars[9].classList.remove("hidden");
+                    document.querySelector(
+                      ".uploadPercentage"
+                    ).innerText = `100%`;
+                    document.querySelector(".chunkedsend").innerHTML =
+                      file_size_conversion(zipBlob.size);
+                    document.querySelector(".speed").innerText = `0KB/s`;
+
+                    setTimeout(async () => {
+                      uploadNextFolderFile(files, index + 1);
+                    }, 2000);
+                  } else {
+                    console.error("Upload failed with status:", xhr.status);
+                    alert("Upload failed. Please try again.");
+                  }
+                };
+
+                xhr.onerror = function () {
+                  console.error("There was a problem with the upload.");
+                  alert(
+                    "Upload failed. Please check your connection and try again."
+                  );
+                };
+                document.querySelector(".cancel").onclick = function (event) {
+                  event.stopPropagation();
+                  if (xhr) {
+                    xhr.abort(); // Abort the upload
+                    console.log("Deleting ", currentFilename, " files");
+                    connction.send(
+                      JSON.stringify({
+                        action: "abort_upload",
+                        folder_path: finalpath,
+                        path: currentFilename + ".zip",
+                      })
+                    );
+                    document
+                      .querySelector(".uploading")
+                      .classList.add("hidden");
+                    document.querySelector(".cancelindication").textContent =
+                      "Upload Canceled";
+                    document
+                      .querySelector(".cancelindication")
+                      .classList.remove("hidden");
+                    setTimeout(() => {
+                      document
+                        .querySelector(".uploadStatus")
+                        .classList.add("hidden");
+                      document.querySelector(".cancel").classList.add("hidden");
+                      document
+                        .querySelector(".cancelindication")
+                        .classList.add("hidden");
+                    }, 2000);
+                  }
+                };
+                xhr.send(formData);
+              });
+            }
           </script>
         </div>
         <div class="filepath">
@@ -626,9 +885,10 @@
                 });
                 let currentopened = finalpath.split("/");
                 currentopened.pop();
+                currentopened = currentopened.pop();
                 document.querySelectorAll(".path").forEach((path) => {
                   document.querySelector(".currentopenedfolder").textContent =
-                    path.children.length == 2 ? "Home" : currentopened.pop();
+                    path.children.length == 2 ? "Home" : currentopened;
                 });
               });
           </script>

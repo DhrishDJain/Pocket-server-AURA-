@@ -252,7 +252,6 @@ void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t in
   if (index == 0) {
     Serial.println();
     Serial.println("====================Requested Upload=========================");
-    Serial.println();
     Serial.printf("UploadStart: %s\n", filename.c_str());
     file = SD.open("/" + filename + ".zip", FILE_WRITE);
     if (!file) {
