@@ -3,6 +3,218 @@ let files_on_server = {};
 var dir = [];
 let icon = {};
 
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("mainsearchinput");
+  const suggestionsContainer = document.getElementById("suggestions");
+  const searcheditemcard = document.querySelector(".card");
+  var filepathpart = document.querySelector(".filepathpart");
+  let itemcontainer = document.querySelector(".item-container");
+  let finalpath = "";
+
+  document.querySelector(".searchicon").addEventListener("click", () => {
+    searchInput.focus();
+    document.querySelector(".searchicon").classList.add("hidden");
+    document.querySelector(".close_search_div").classList.remove("hidden");
+  });
+  document.getElementById("close_search_div").addEventListener("click", () => {
+    document.querySelector(".close_search").classList.add("hidden");
+    document.querySelector(".searchicon").classList.remove("hidden");
+    searchInput.value = "";
+    document.querySelector(".typeheader").textContent = "Type";
+    document.querySelector(".typeheader").style.minWidth = "";
+    document.querySelector(".dateheader").style.minWidth = "";
+    show_file_in_dir(finalpath);
+  });
+  searchInput.addEventListener("focus", () => {
+    document.querySelector(".searchicon").classList.add("hidden");
+    document.querySelector(".close_search").classList.remove("hidden");
+  });
+  document.addEventListener("click", function (event) {
+    if (!document.querySelector(".suggestions").contains(event.target)) {
+      document.querySelector(".suggestions").classList.add("hidden");
+    }
+  });
+  searchInput.addEventListener("click", () => {
+    const itemList = document.querySelector(".item-container");
+    const elements = document
+      .querySelector(".mobilepath")
+      .querySelectorAll(".filepathpart");
+    // find file path
+    finalpath = "";
+    for (let i = 0; i < elements.length; i++) {
+      finalpath += elements[i].children[1].textContent.replace(/\s/g, "");
+      finalpath += "/";
+    }
+    if (finalpath.length == 0) {
+      finalpath = "/";
+    }
+    let items = extractFilenames(files_on_server[finalpath]);
+    async function extractFilenames(data) {
+      const filenames = [];
+      async function traverse(obj, currentFolder = "") {
+        const promises = [];
+
+        for (let i = 0; i < obj.length; i++) {
+          if (obj[i].filename) {
+            const fullPath = currentFolder + obj[i].filename + "_" + i;
+            filenames.push(fullPath);
+          } else if (obj[i].folder) {
+            const newFolder = obj[i].folder + "/";
+            const promise = traverse(
+              files_on_server[obj[i].folder + "/"],
+              newFolder
+            );
+            promises.push(promise);
+          }
+        }
+
+        await Promise.all(promises);
+      }
+
+      traverse(data, finalpath).then(() => {
+        items = filenames;
+        return filenames;
+      });
+    }
+    searchInput.addEventListener("input", function () {
+      const query = this.value.toLowerCase();
+      document.querySelector(".suggestions").classList.remove("hidden");
+      document.querySelector(".typeheader").textContent = "Location";
+      document.querySelector(".typeheader").style.minWidth = "18.5%";
+      document.querySelector(".dateheader").style.minWidth = "17.1%";
+      suggestionsContainer.innerHTML = "";
+      Array.from(Array.from(itemList.children).slice(2)).forEach((item) => {
+        item.classList.remove("hidden");
+      });
+
+      if (query) {
+        const filteredSuggestions = items.filter((item) =>
+          item.toLowerCase().includes(query)
+        );
+        while (document.querySelector(".item-container").children.length > 2) {
+          document
+            .querySelector(".item-container")
+            .removeChild(document.querySelector(".item-container").lastChild);
+        }
+
+        if (filteredSuggestions.length) {
+          filteredSuggestions.forEach((suggestion) => {
+            const suggestionItem = document.createElement("span");
+            let newsearcheditemcard = searcheditemcard.cloneNode(true);
+            let path = suggestion.split("/");
+            path.pop();
+            newsearcheditemcard.classList.remove("hidden");
+            newsearcheditemcard.classList.add("searchitemcard");
+            newsearcheditemcard.removeChild(
+              newsearcheditemcard.lastElementChild
+            );
+            let suggestiondata =
+              files_on_server[path.join("/") + "/"][
+                parseInt(suggestion.split("_").pop())
+              ];
+            let name = `${suggestiondata.filename.split("#")[0]}.${
+              suggestiondata.filename.split("#")[1]
+            }`;
+            suggestionItem.classList.add("suggestion-item");
+            suggestionItem.textContent = name;
+            suggestionItem.addEventListener("click", function (event) {
+              searchInput.value = name;
+              suggestionsContainer.classList.add("hidden");
+              suggestionselected = true;
+              Array.from(
+                document.querySelector(".item-container").children
+              ).forEach((item) => {
+                if (item.querySelector(".filename").textContent !== name) {
+                  item.classList.add("hidden");
+                }
+              });
+            });
+            suggestionsContainer.appendChild(suggestionItem);
+            newsearcheditemcard.querySelector(".filename").textContent = name;
+            if (suggestiondata.modified_date) {
+              newsearcheditemcard.querySelector(".dateofmodi").textContent =
+                suggestiondata.modified_date;
+              newsearcheditemcard.querySelector(".size").textContent =
+                file_size_conversion(suggestiondata.size);
+            }
+            newsearcheditemcard.querySelector(".filetype").textContent =
+              path.join("/") + "/" + name;
+            newsearcheditemcard.querySelector(".filetype").style.textWrap =
+              "nowrap";
+            newsearcheditemcard.querySelector(".filetype").style.maxWidth =
+              "10rem";
+            newsearcheditemcard.querySelector(".filetype").style.minWidth =
+              "5rem";
+            newsearcheditemcard.querySelector(".filetype").style.overflowX =
+              "scroll";
+            if (
+              icon[suggestion.replace(/.*\//, "").split("#")[1]] != undefined
+            ) {
+              newsearcheditemcard.querySelector(".icon").innerHTML =
+                icon[suggestion.replace(/.*\//, "").split("#")[1]];
+            }
+            newsearcheditemcard.addEventListener("click", () => {
+              document.querySelector(".close_search").classList.add("hidden");
+              document.querySelector(".searchicon").classList.remove("hidden");
+              searchInput.value = "";
+              document.querySelector(".typeheader").textContent = "Type";
+              document.querySelector(".typeheader").style.minWidth = "";
+              document.querySelector(".dateheader").style.minWidth = "";
+              show_file_in_dir(path.join("/") + "/");
+              const itemContainer = document.querySelector(".item-container");
+
+              document.querySelectorAll(".card").forEach((card) => {
+                const filenameElement = card.querySelector(".filename");
+                if (
+                  filenameElement &&
+                  filenameElement.textContent.trim() === name
+                ) {
+                  const cardTopPosition = card.offsetTop;
+                  itemContainer.scrollTop = cardTopPosition;
+                  card.style.background = "var(--accent1)";
+                  card.style.transition = "background 0.5s ease"; // Add transition for fade-out effect
+                  card.style.borderRadius = "0.25rem"; // Add transition for fade-out effect
+
+                  setTimeout(() => {
+                    card.style.background = ""; // This will trigger the fade-out effect
+                  }, 500);
+                }
+              });
+              document.querySelectorAll(".path").forEach((path) => {
+                while (path.children.length > 2) {
+                  path.removeChild(path.lastChild);
+                }
+              });
+              if (path.length > 1) {
+                path.forEach((pathpart) => {
+                  if (pathpart.length > 1) {
+                    var newfilepathpart = filepathpart.cloneNode(true);
+                    newfilepathpart.classList.remove("hidden");
+                    newfilepathpart.children[1].children[0].textContent =
+                      pathpart.trim();
+                    document.querySelectorAll(".path").forEach((path) => {
+                      path.appendChild(newfilepathpart.cloneNode(true));
+                    });
+                    document.querySelector(
+                      ".openfolder"
+                    ).children[1].textContent = pathpart;
+                  }
+                });
+              }
+            });
+            itemcontainer.appendChild(newsearcheditemcard);
+          });
+        } else {
+          suggestionsContainer.innerHTML =
+            " <span class='nofile'>No result found</span>";
+        }
+      } else {
+        show_file_in_dir(finalpath);
+        suggestionsContainer.classList.add("hidden");
+      }
+    });
+  });
+});
 connction.onopen = () => {
   console.log("WebSocket connection established");
   connction.send(
@@ -95,7 +307,6 @@ function show_file_in_dir(dir) {
             if (fullFolderPath.replace(/.*\//, "").length > 1) {
               newfilepathpart.children[1].children[0].textContent =
                 fullFolderPath.replace(/.*\//, "");
-
               document.querySelectorAll(".path").forEach((path) => {
                 path.appendChild(newfilepathpart.cloneNode(true));
               });
@@ -202,6 +413,9 @@ function show_file_in_dir(dir) {
           ) {
             fillmovetodir("/");
           }
+        }
+        if (!document.querySelector(".suggestions").contains(event.target)) {
+          document.querySelector(".suggestions").classList.add("hidden");
         }
       });
       optionContents.forEach((content) => {
@@ -666,5 +880,3 @@ function fillmovetodir(dir) {
     confirmmove.addEventListener("click", confirmmove.listener);
   });
 }
-
-

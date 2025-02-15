@@ -6,6 +6,7 @@ body {
   --primary: #1a1b24;
   --secondary: rgb(255, 255, 255, 0.07);
   --accent: rgb(28, 144, 245);
+  --accent1: #ff0004;
   height: 100dvh;
   width: 100dvw;
   margin: 0;
@@ -21,6 +22,7 @@ span {
   margin: 0;
   padding: 0;
 }
+
 .noscroll::-webkit-scrollbar {
   display: none;
 }
@@ -204,7 +206,7 @@ aside {
 }
 
 .create_options span:hover {
-  background: #ff0004;
+  background: var(--accent1);
 }
 .create_options::before,
 .create_options::after {
@@ -385,7 +387,7 @@ aside.open {
   align-items: center;
 }
 
-.mobilepath{
+.mobilepath {
   display: none;
 }
 .movetofilepathpart,
@@ -446,6 +448,11 @@ aside.open {
   align-items: center;
   font-size: 2.25rem;
 }
+
+.search-and-sort {
+  position: relative;
+}
+
 .searchbox {
   display: flex;
   background: var(--secondary);
@@ -464,6 +471,37 @@ aside.open {
   color: white;
   outline: 0;
   border: 0;
+}
+.close_search {
+  margin-right: 0.5rem;
+  padding: 0.25rem;
+  width: 1.25rem;
+  min-width: 0.01rem;
+}
+
+.suggestions {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 15rem;
+  background: var(--primary);
+  color: #fff;
+  top: 3.5rem;
+  right: 0.25rem;
+  padding: 0.5rem;
+  overflow-y: scroll;
+  border: 1px solid #ccc;
+  z-index: 1000;
+}
+.suggestions span {
+  padding: 0.5rem 0.75rem;
+  min-width: 15rem;
+  background: var(--primary);
+}
+.suggestions span:hover {
+  background: var(--accent1);
+  clip-path: polygon(100% 0, 100% 72%, 97% 100%, 0 100%, 0 25%, 3% 0);
 }
 
 .searchbox svg {
@@ -524,6 +562,9 @@ aside.open {
 }
 .folder {
   grid-template-columns: 2.8rem 40% auto auto 5rem auto;
+}
+.searchitemcard{
+  grid-template-columns: 2.8rem 40% auto 12rem 10rem min-content !important;
 }
 .card span {
   line-height: 100%;
@@ -826,6 +867,12 @@ aside.open {
   }
   .searchbox svg {
     min-width: 1.5rem;
+  }
+
+  .close_search{
+    width: 1.4rem;
+    min-width: unset !important;
+    padding: 0.2rem;
   }
   .laptoppath,
   .headers {

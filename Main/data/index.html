@@ -6,8 +6,8 @@
 
     <title>AURA_DB</title>
 
-    <link rel="stylesheet" href="style37.css" />
-    <script type="text/javascript" src="script7.js"></script>
+    <link rel="stylesheet" href="style627.css" />
+    <script type="text/javascript" src="script342.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -877,6 +877,7 @@
                 if (finalpath.length == 0) {
                   finalpath = "/";
                 }
+                // console.log(finalpath);
                 show_file_in_dir(finalpath);
                 document.querySelectorAll(".path").forEach((path) => {
                   if (path.children.length > 2) {
@@ -897,11 +898,17 @@
             style="display: flex; column-gap: 1rem; width: max-content"
           >
             <div class="searchbox">
-              <input type="text" placeholder="Search for folders" />
+              <input
+                id="mainsearchinput"
+                type="text"
+                placeholder="Search for folders"
+              />
               <svg
                 width="1.8rem"
                 viewBox="0 0 24 24"
                 fill="none"
+                id="searchicon"
+                class="searchicon"
                 style="margin-right: 0.5rem"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -913,7 +920,20 @@
                   stroke-linejoin="round"
                 />
               </svg>
+
+              <svg
+                id="close_search_div"
+                fill="#03B2FD"
+                version="1.1"
+                class="close_search hidden"
+                viewBox="0 0 490 490"
+              >
+                <polygon
+                  points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "
+                />
+              </svg>
             </div>
+            <div id="suggestions" class="suggestions noscroll hidden"></div>
             <div class="dropdown">
               <button>
                 <svg
@@ -1051,8 +1071,9 @@
               >File name.exten</span
             >
             <span class="dateofmodi">00-00-0000 00:00</span>
-
-            <span style="grid-column: 4" class="filetype">File Type</span>
+            <span style="grid-column: 4" class="filetype noscroll"
+              >File Type</span
+            >
             <span style="grid-column: 5" class="size">000.00GB</span>
             <div style="grid-column: 6" class="option-dropdown">
               <button
