@@ -472,13 +472,16 @@ aside.open {
   outline: 0;
   border: 0;
 }
+.side_close_search,
 .close_search {
   margin-right: 0.5rem;
   padding: 0.25rem;
   width: 1.25rem;
   min-width: 0.01rem;
 }
-
+.side_close_search{
+  margin-right: 0;
+}
 .suggestions {
   position: absolute;
   display: flex;

@@ -5,12 +5,75 @@ let icon = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("mainsearchinput");
+  const sidenavsearchInput = document.querySelector(".sidenavsearch");
   const suggestionsContainer = document.getElementById("suggestions");
   const searcheditemcard = document.querySelector(".card");
   var filepathpart = document.querySelector(".filepathpart");
   let itemcontainer = document.querySelector(".item-container");
   let finalpath = "";
 
+  document.querySelector(".sidesearchicon").addEventListener("click", () => {
+    sidenavsearchInput.focus();
+    document.querySelector(".sidesearchicon").classList.add("hidden");
+    document.querySelector(".side_close_search").classList.remove("hidden");
+  });
+  document.querySelector(".side_close_search").addEventListener("click", () => {
+    document.querySelector(".side_close_search").classList.add("hidden");
+    document.querySelector(".sidesearchicon").classList.remove("hidden");
+    sidenavsearchInput.value = "";
+    document.querySelector(".typeheader").textContent = "Type";
+    document.querySelector(".typeheader").style.minWidth = "";
+    document.querySelector(".dateheader").style.minWidth = "";
+    populate_side();
+  });
+  sidenavsearchInput.addEventListener("focus", () => {
+    document.querySelector(".sidesearchicon").classList.add("hidden");
+    document.querySelector(".side_close_search").classList.remove("hidden");
+  });
+  sidenavsearchInput.addEventListener("click", () => {
+    const sidenavfolder = document.querySelector(".sidefolder");
+    const folders = Object.keys(files_on_server);
+
+    sidenavsearchInput.addEventListener("input", function () {
+      // Example keys
+      const query = this.value.toLowerCase();
+      while (document.querySelector(".folder-list").children.length > 1) {
+        document
+          .querySelector(".folder-list")
+          .removeChild(document.querySelector(".folder-list").lastChild);
+      }
+      if (query) {
+        const filteredSuggestions = folders.filter((folder) =>
+          folder
+            .split("/")
+            [folder.split("/").length - 2].toLowerCase()
+            .includes(query)
+        );
+        filteredSuggestions.forEach((key) => {
+          let newsidefolder = sidenavfolder.cloneNode(true);
+          newsidefolder.classList.remove("hidden");
+          let folderName = key.split("/")[key.split("/").length - 2];
+          let folderExists = Array.from(
+            document.querySelectorAll(".foldername")
+          ).some((el) => el.textContent === folderName);
+          if (folderExists) {
+            folderName =
+              key.split("/")[key.split("/").length - 3] + "/" + folderName;
+          }
+          newsidefolder.querySelector(".foldername").textContent = folderName;
+          newsidefolder.addEventListener("click", () => {
+            show_file_in_dir(key);
+            processPaths(key);
+          });
+          console.log(newsidefolder);
+          document.querySelector(".folder-list").appendChild(newsidefolder);
+        });
+      } else {
+        populate_side();
+      }
+    });
+  });
+  //main search event
   document.querySelector(".searchicon").addEventListener("click", () => {
     searchInput.focus();
     document.querySelector(".searchicon").classList.add("hidden");
@@ -34,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".suggestions").classList.add("hidden");
     }
   });
+
   searchInput.addEventListener("click", () => {
     const itemList = document.querySelector(".item-container");
     const elements = document
@@ -180,27 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   }, 500);
                 }
               });
-              document.querySelectorAll(".path").forEach((path) => {
-                while (path.children.length > 2) {
-                  path.removeChild(path.lastChild);
-                }
-              });
-              if (path.length > 1) {
-                path.forEach((pathpart) => {
-                  if (pathpart.length > 1) {
-                    var newfilepathpart = filepathpart.cloneNode(true);
-                    newfilepathpart.classList.remove("hidden");
-                    newfilepathpart.children[1].children[0].textContent =
-                      pathpart.trim();
-                    document.querySelectorAll(".path").forEach((path) => {
-                      path.appendChild(newfilepathpart.cloneNode(true));
-                    });
-                    document.querySelector(
-                      ".openfolder"
-                    ).children[1].textContent = pathpart;
-                  }
-                });
-              }
+              processPaths(path.join("/"));
             });
             itemcontainer.appendChild(newsearcheditemcard);
           });
@@ -270,6 +314,59 @@ connction.onmessage = (event) => {
   console.log("Updated object:", files_on_server);
 };
 
+function processPaths(rawpath) {
+  let path = rawpath.split("/");
+  var filepathpart = document.querySelector(".filepathpart");
+
+  document.querySelectorAll(".path").forEach((path) => {
+    while (path.children.length > 2) {
+      path.removeChild(path.lastChild);
+    }
+  });
+  path.forEach((pathpart) => {
+    if (pathpart.length > 1) {
+      var newfilepathpart = filepathpart.cloneNode(true);
+      newfilepathpart.classList.remove("hidden");
+      newfilepathpart.children[1].children[0].textContent = pathpart.trim();
+      document.querySelectorAll(".path").forEach((path) => {
+        path.appendChild(newfilepathpart.cloneNode(true));
+      });
+      document.querySelector(".openfolder").children[1].textContent = pathpart;
+    }
+  });
+}
+function populate_side() {
+  let folder_list = document.querySelector(".folder-list");
+  var sidemenufolder = document.querySelector(".sidefolder");
+  while (folder_list.children.length > 1) {
+    folder_list.removeChild(folder_list.lastChild);
+  }
+  const folders = Object.keys(files_on_server);
+  folders.forEach((folder, index) => {
+    if (index === 0) return;
+    var newsidemenufolder = sidemenufolder.cloneNode(true);
+    newsidemenufolder.classList.remove("hidden");
+
+    let folderName = folder.split("/")[folder.split("/").length - 2];
+    let folderExists = Array.from(
+      document.querySelectorAll(".foldername")
+    ).some((el) => el.textContent === folderName);
+    if (folderExists) {
+      folderName =
+        folder.split("/")[folder.split("/").length - 3] + "/" + folderName;
+    }
+
+    newsidemenufolder.querySelector(".foldername").textContent = folderName;
+
+    newsidemenufolder.addEventListener("click", function (event) {
+      event.stopPropagation();
+      show_file_in_dir(folder);
+      processPaths(folder);
+    });
+    folder_list.appendChild(newsidemenufolder);
+  });
+}
+
 function list_dir_in_json() {
   for (var x in files_on_server) {
     dir.push(x);
@@ -304,15 +401,7 @@ function show_file_in_dir(dir) {
             event.stopPropagation();
             const fullFolderPath = files_on_server[dir][i]["folder"].trim();
             show_file_in_dir(fullFolderPath + "/");
-            if (fullFolderPath.replace(/.*\//, "").length > 1) {
-              newfilepathpart.children[1].children[0].textContent =
-                fullFolderPath.replace(/.*\//, "");
-              document.querySelectorAll(".path").forEach((path) => {
-                path.appendChild(newfilepathpart.cloneNode(true));
-              });
-              document.querySelector(".openfolder").children[1].textContent =
-                fullFolderPath.replace(/.*\//, "");
-            }
+            processPaths(fullFolderPath + "/");
           });
         }
       }
@@ -343,45 +432,7 @@ function show_file_in_dir(dir) {
   }
 
   if (dir == "/") {
-    while (document.querySelector(".folder-list").children.length > 1) {
-      document
-        .querySelector(".folder-list")
-        .removeChild(document.querySelector(".folder-list").lastChild);
-    }
-    document.querySelectorAll(".folder").forEach((folder, index) => {
-      if (index === 0) return;
-      var sidemenufolder = document.querySelector(".sidefolder");
-      var newsidemenufolder = sidemenufolder.cloneNode(true);
-      newsidemenufolder.classList.remove("hidden");
-      newsidemenufolder.querySelector(".foldername").textContent =
-        folder.querySelector(".filename").textContent;
-      document.querySelector(".folder-list").appendChild(newsidemenufolder);
-      newsidemenufolder.addEventListener("click", function (event) {
-        event.stopPropagation();
-        document.querySelectorAll(".path").forEach((path) => {
-          while (path.children.length > 2) {
-            path.removeChild(path.lastChild);
-          }
-        });
-        const fullFolderPath = newsidemenufolder
-          .querySelector(".foldername")
-          .textContent.trim();
-        show_file_in_dir("/" + fullFolderPath + "/");
-        if (fullFolderPath.replace(/.*\//, "").length > 1) {
-          var newfilepathpart = document
-            .querySelector(".filepathpart")
-            .cloneNode(true);
-          newfilepathpart.classList.remove("hidden");
-          newfilepathpart.children[1].children[0].textContent =
-            fullFolderPath.replace(/.*\//, "");
-          document.querySelectorAll(".path").forEach((path) => {
-            path.appendChild(newfilepathpart.cloneNode(true));
-          });
-          document.querySelector(".openfolder").children[1].textContent =
-            fullFolderPath.replace(/.*\//, "");
-        }
-      });
-    });
+    populate_side();
   }
   const itemContainer = document.querySelector(".item-container");
   const optiondropdown = document.querySelectorAll(".option-dropdown");

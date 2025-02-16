@@ -6,8 +6,8 @@
 
     <title>AURA_DB</title>
 
-    <link rel="stylesheet" href="style627.css" />
-    <script type="text/javascript" src="script342.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="script.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -37,10 +37,15 @@
           </div>
           <h2>Folders</h2>
           <div class="sidenav-search">
-            <input type="text" placeholder="Search for folders" />
+            <input
+              type="text"
+              class="sidenavsearch"
+              placeholder="Search for folders"
+            />
             <svg
               viewBox="0 0 24 24"
               fill="none"
+              class="sidesearchicon"
               style="min-width: 1.75rem; width: 2rem"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -50,6 +55,16 @@
                 stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+              />
+            </svg>
+            <svg
+              fill="#03B2FD"
+              version="1.1"
+              class="side_close_search hidden"
+              viewBox="0 0 490 490"
+            >
+              <polygon
+                points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "
               />
             </svg>
           </div>
@@ -782,7 +797,7 @@
                 </g>
               </svg>
               <div class="file-location">
-                <span></span>
+                <span class="file-location-name"></span>
               </div>
             </div>
           </div>
