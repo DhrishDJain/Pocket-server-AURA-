@@ -357,6 +357,8 @@ function populate_side() {
     }
 
     newsidemenufolder.querySelector(".foldername").textContent = folderName;
+    newsidemenufolder.querySelector(".noofitem").textContent =
+      files_on_server[folder].length + " items";
 
     newsidemenufolder.addEventListener("click", function (event) {
       event.stopPropagation();

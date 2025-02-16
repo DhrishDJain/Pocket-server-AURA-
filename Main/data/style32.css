@@ -81,7 +81,7 @@ aside {
 .folder-list {
   display: flex;
   flex-direction: column;
-  row-gap: 0.75rem;
+  row-gap: 0.5rem;
   height: 80%;
   max-height: 80%;
   overflow-y: scroll;
@@ -90,16 +90,23 @@ aside {
   display: flex;
   align-items: center;
   column-gap: 1rem;
-  padding: 0.625rem; /* 10px */
-  background-color: #3e3e4e;
+  padding: 0.5rem; 
   border-radius: 0.3125rem; /* 5px */
 }
 
-.sidefolder span {
-  flex-grow: 1;
+.sidefolder {
+  color: #ffffff;
 }
-.sidefolder .folderdetail {
-  color: #b0b0b0;
+.foldercontent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.foldername{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 6.5rem;
 }
 .storage-status {
   margin-top: auto;
@@ -123,7 +130,6 @@ aside {
   bottom: 4vh;
   z-index: 999;
   right: 1.25rem;
-  left: 1.25rem;
   color: #000 !important;
 }
 .create_options {
@@ -479,7 +485,7 @@ aside.open {
   width: 1.25rem;
   min-width: 0.01rem;
 }
-.side_close_search{
+.side_close_search {
   margin-right: 0;
 }
 .suggestions {
@@ -566,7 +572,7 @@ aside.open {
 .folder {
   grid-template-columns: 2.8rem 40% auto auto 5rem auto;
 }
-.searchitemcard{
+.searchitemcard {
   grid-template-columns: 2.8rem 40% auto 12rem 10rem min-content !important;
 }
 .card span {
@@ -610,6 +616,7 @@ aside.open {
   width: 100%;
   cursor: pointer;
 }
+.foldername:hover,
 .detailloc:hover,
 .movingpath:hover,
 .filename:hover,
@@ -872,7 +879,7 @@ aside.open {
     min-width: 1.5rem;
   }
 
-  .close_search{
+  .close_search {
     width: 1.4rem;
     min-width: unset !important;
     padding: 0.2rem;
