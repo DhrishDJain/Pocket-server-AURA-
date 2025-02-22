@@ -6,8 +6,8 @@
 
     <title>AURA_DB</title>
 
-    <link rel="stylesheet" href="style32.css" />
-    <script type="text/javascript" src="script.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="script444.js"></script>
     <script src="/jszip.min.js"></script>
   </head>
   <body class="noscroll">
@@ -82,9 +82,13 @@
                 />
               </svg>
               <div class="foldercontent">
-                <span style="font-size: 1.25rem" class="foldername noscroll   ">astra</span>
+                <span style="font-size: 1.25rem" class="foldername noscroll"
+                  >astra</span
+                >
                 <!-- <div class="folderdetail"> -->
-                <span style="font-size: 0.9rem;color: #ffffff82;" class="noofitem"
+                <span
+                  style="font-size: 0.9rem; color: #ffffff82"
+                  class="noofitem"
                   >11 items</span
                 >
                 <!-- </div> -->
@@ -575,7 +579,7 @@
                     return;
                   }
                   const tempobj = JSON.parse(event.data);
-                  const firstKey = Object.keys(tempobj)[0];
+                  const firstKey = Object.keys(tempobj)[1];
                   let lastkey;
                   if (firstKey === "/") {
                     if (tempobj.hasOwnProperty("/" + lastfolderinFolderArray)) {
@@ -587,7 +591,6 @@
                   if (lastkey === Lastuploadingfolder && !Lastfoldercreated) {
                     Lastfoldercreated = true;
                     uploadNextFolderFile(files, 0);
-
                     return;
                   }
                 };
@@ -604,7 +607,6 @@
                 connction.send(
                   JSON.stringify({ action: "sendJson", path: finalpath })
                 );
-                console.log("received???");
                 setTimeout(() => {
                   document.querySelector(".cancel").classList.add("hidden");
                   document
@@ -617,7 +619,8 @@
                 return;
               }
 
-              const file = files[index]; // Get the current file to upload
+              const file = files[index];
+
               const zip = new JSZip();
               // Zipping file
               zip.file(file.name, file, {
@@ -802,22 +805,49 @@
               </div>
             </div>
           </div>
-          <div class="profile">
-            <div class="text">
-              <div class="name">Mr Stark</div>
-              <div>
-                <span class="role">Admin</span>
-                <span class="time"> 00:11:11 </span>
-              </div>
+          <div class="storage-container">
+            <div class="storage-header">
+              <span
+                style="font-weight: 400; font-size: 1rem"
+                class="storage-text"
+                >Storage Status</span
+              >
+              <span
+                style="color: #cecece; font-size: 0.8rem"
+                class="storage-text"
+                >Storage connected</span
+              >
             </div>
-            <div class="profile-pic">
-              <img
-                alt="Profile picture of a man in a suit with a stylized background"
-                width="60"
-                height="60"
-                style="object-fit: cover; object-position: top"
-                src="test.bmp"
-              />
+            <div class="storage-details">
+              <div class="storage-icon">
+                <svg viewBox="0 0 512 512" fill="#000000" stroke="#fff">
+                  <g>
+                    <path
+                      style="fill: none"
+                      d="M421.227,190.725v-46.916h15.598V95.342c-33.25-33.25-51.893-51.893-85.143-85.143H75.175v94.853 h20.697v85.673H75.175v311.076h124.729v-15.299h112.191v15.299h124.729V190.725H421.227z"
+                    ></path>
+                    <rect
+                      x="132.59"
+                      y="194.805"
+                      style="fill: none"
+                      stroke="#fff"
+                      stroke-width="16px"
+                      width="252.94"
+                      height="252.94"
+                    ></rect>
+                    <path
+                      style="fill: #fff"
+                      d="M436.825,512H312.096c-5.633,0-10.199-4.567-10.199-10.199v-5.1h-91.793v5.1c0,5.632-4.566,10.199-10.199,10.199H75.175 c-5.633,0-10.199-4.567-10.199-10.199V190.725c0-5.632,4.566-10.199,10.199-10.199h10.498v-65.275H75.175 c-5.633,0-10.199-4.567-10.199-10.199V10.199C64.976,4.567,69.542,0,75.175,0h276.507c2.705,0,5.299,1.075,7.212,2.987 l85.143,85.142c1.912,1.913,2.987,4.507,2.987,7.212v48.468c0,5.632-4.566,10.199-10.199,10.199h-5.398v26.518h5.398 c5.633,0,10.199,4.567,10.199,10.199v311.076C447.024,507.433,442.458,512,436.825,512z M322.295,491.602h104.331V200.924h-5.398 c-5.633,0-10.199-4.567-10.199-10.199v-46.916c0-5.632,4.566-10.199,10.199-10.199h5.398V99.567l-79.168-79.168H85.374v74.454 h10.498c5.633,0,10.199,4.567,10.199,10.199v85.673c0,5.632-4.566,10.199-10.199,10.199H85.374v290.677h104.331v-5.1 c0-5.632,4.566-10.199,10.199-10.199h112.191c5.633,0,10.199,4.567,10.199,10.199V491.602z"
+                    ></path>
+                  </g>
+                </svg>
+              </div>
+              <div class="storage-status">
+                <span class="storage-size">000MB/000GB</span>
+                <div class="storage-bar">
+                  <div class="storage-fill"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

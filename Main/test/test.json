@@ -1,28 +1,10 @@
 {
+  "storage_status": [
+    { "occupied": 40419328, "free": 31894011904, "total": 31914983424 }
+  ],
   "/": [
     { "folder": "/test2" },
     { "folder": "/test4" },
-    {
-      "filename": "qqq#gif#.zip",
-      "size": 217416,
-      "extension": "gif",
-      "creation_date": "24-01-2025 12:26",
-      "modified_date": "09-09-2024 21:45"
-    },
-    {
-      "filename": "html#svg#.zip",
-      "size": 298,
-      "extension": "svg",
-      "creation_date": "25-01-2025 13:57",
-      "modified_date": "10-01-2025 20:20"
-    },
-    {
-      "filename": "ppt#svg#.zip",
-      "size": 9749,
-      "extension": "svg",
-      "creation_date": "01-01-1980 00:00",
-      "modified_date": "01-01-1980 00:00"
-    },
     {
       "filename": "circuit-svgrepo-com#svg#.zip",
       "size": 862,
@@ -51,13 +33,6 @@
       "extension": "svg",
       "creation_date": "30-01-2025 00:17",
       "modified_date": "29-12-2024 09:29"
-    },
-    {
-      "filename": "544e4a52-2777-4fce-87f6-2acdb27ac569-1#svg#.zip",
-      "size": 16798,
-      "extension": "svg",
-      "creation_date": "01-01-1980 00:02",
-      "modified_date": "01-01-1980 00:02"
     }
   ],
   "/test2/": [{ "folder": "/test2/level11" }, { "folder": "/test2/level1" }],
@@ -186,7 +161,15 @@
     { "folder": "/test4/989" },
     { "folder": "/test4/Screenshots" }
   ],
-  "/test4/leve222/": [],
+  "/test4/leve222/": [
+    {
+      "filename": "544e4a52-2777-4fce-87f6-2acdb27ac569-1#svg#.zip",
+      "size": 16798,
+      "extension": "svg",
+      "creation_date": "01-01-1980 00:02",
+      "modified_date": "01-01-1980 00:02"
+    }
+  ],
   "/test4/l333/": [
     {
       "filename": "17434523#png#.zip",
@@ -354,6 +337,13 @@
       "extension": "png",
       "creation_date": "01-01-1980 00:03",
       "modified_date": "17-11-2024 12:43"
+    },
+    {
+      "filename": "sdod#pdf#.zip",
+      "size": 130707,
+      "extension": "pdf",
+      "creation_date": "16-02-2025 18:30",
+      "modified_date": "04-02-2025 21:49"
     }
   ],
   "/test/insider/": [

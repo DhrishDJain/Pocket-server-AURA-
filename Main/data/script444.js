@@ -281,6 +281,60 @@ fetch("/icons.json")
   .catch((error) => {
     console.error("There was a problem with the fetch operation:", error);
   });
+function formatDataSize(bytes, decimals = 2) {
+  if (bytes === 0) return "0 Bytes";
+  if (bytes < 0) throw new Error("Bytes cannot be negative");
+
+  const units = ["Bytes", "KB", "MB", "GB", "TB"];
+  const k = 1000;
+
+  // Find the appropriate unit level
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  // Don't exceed available units
+  if (i >= units.length) {
+    throw new Error("Value too large to convert");
+  }
+
+  // Convert to the appropriate unit and round
+  const value = bytes / Math.pow(k, i);
+  let roundedValue = parseFloat(value.toFixed(decimals));
+  if (value % 10 > 5) {
+    roundedValue += 1;
+  }
+
+  return `${roundedValue} ${units[i]}`;
+}
+function findLatestModifiedDate(folderPath) {
+  let files = files_on_server[folderPath];
+
+  // Filter out entries without a modified_date and folders
+  let dates = files
+    .filter((file) => file["modified_date"])
+    .map((file) => {
+      // Convert the modified_date string to a Date object
+      let [date, time] = file["modified_date"].split(" ");
+      let [day, month, year] = date.split("-").map(Number);
+      let [hours, minutes] = time.split(":").map(Number);
+      return new Date(year, month - 1, day, hours, minutes);
+    });
+  // If no files with modified_date are found, check subfolders
+  if (dates.length === 0) {
+    files.forEach((folder) => {
+      let subfolderPath = folder["folder"] + "/";
+      let subfolderDate = findLatestModifiedDate(subfolderPath);
+      if (subfolderDate) {
+        dates.push(subfolderDate);
+      }
+    });
+  }
+  if (dates.length > 0) {
+    let latestDate = new Date(Math.max(...dates));
+    return latestDate;
+  } else {
+    return null;
+  }
+}
 
 connction.onmessage = (event) => {
   if (event.data == " " || event.data == undefined) {
@@ -289,9 +343,32 @@ connction.onmessage = (event) => {
   }
 
   const tempobj = JSON.parse(event.data);
-  console.log("Received data from WebSocket:", tempobj);
+  let used = formatDataSize(tempobj["storage_status"][0]["occupied"]);
+  let total_size = formatDataSize(tempobj["storage_status"][0]["total"], 0);
 
-  const firstKey = Object.keys(tempobj)[0];
+  // Assuming formatDataSize returns a string with units, e.g., "10 GB"
+  let usedValue = parseFloat(used);
+  let totalValue = parseFloat(total_size);
+  let usedUnit = used.match(/[a-zA-Z]+/)[0];
+  let totalUnit = total_size.match(/[a-zA-Z]+/)[0];
+
+  // Convert used to the same unit as total if necessary
+  if (usedUnit !== totalUnit) {
+    if (usedUnit === "MB" && totalUnit === "GB") {
+      usedValue /= 1024;
+    } else if (usedUnit === "GB" && totalUnit === "MB") {
+      usedValue *= 1024;
+    }
+    // Add more unit conversions if needed
+  }
+
+  let percentageFilled = (usedValue / totalValue) * 100;
+  console.log("Received data from WebSocket:", tempobj);
+  document.querySelector(
+    ".storage-size"
+  ).textContent = ` ${used} /${total_size}`;
+  document.querySelector(".storage-fill").style.width = percentageFilled + "%";
+  const firstKey = Object.keys(tempobj)[1];
   if (firstKey === "/") {
     files_on_server = tempobj;
     list_dir_in_json();
@@ -343,11 +420,12 @@ function populate_side() {
   }
   const folders = Object.keys(files_on_server);
   folders.forEach((folder, index) => {
-    if (index === 0) return;
+    if (index <= 1) return;
     var newsidemenufolder = sidemenufolder.cloneNode(true);
     newsidemenufolder.classList.remove("hidden");
 
     let folderName = folder.split("/")[folder.split("/").length - 2];
+
     let folderExists = Array.from(
       document.querySelectorAll(".foldername")
     ).some((el) => el.textContent === folderName);
@@ -355,7 +433,6 @@ function populate_side() {
       folderName =
         folder.split("/")[folder.split("/").length - 3] + "/" + folderName;
     }
-
     newsidemenufolder.querySelector(".foldername").textContent = folderName;
     newsidemenufolder.querySelector(".noofitem").textContent =
       files_on_server[folder].length + " items";
@@ -368,9 +445,11 @@ function populate_side() {
     folder_list.appendChild(newsidemenufolder);
   });
 }
-
 function list_dir_in_json() {
   for (var x in files_on_server) {
+    if (x === "storage_status") {
+      continue;
+    }
     dir.push(x);
   }
   show_file_in_dir(dir[0]);
@@ -397,6 +476,17 @@ function show_file_in_dir(dir) {
       newfolder.querySelector(".filename").textContent = files_on_server[dir][
         i
       ]["folder"].replace(/.*\//, "");
+      // Assuming files_on_server is defined as provided
+      let creatingfolder = files_on_server[dir][i]["folder"];
+      let latestModifiedDate = findLatestModifiedDate(creatingfolder + "/");
+      let day = String(latestModifiedDate.getDate()).padStart(2, "0");
+      let month = String(latestModifiedDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+      let year = latestModifiedDate.getFullYear();
+      let hours = String(latestModifiedDate.getHours()).padStart(2, "0");
+      let minutes = String(latestModifiedDate.getMinutes()).padStart(2, "0");
+      latestModifiedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
+      newfolder.querySelector(".dateofmodi").textContent = latestModifiedDate;
+
       for (let j = 0; j < 4; j++) {
         if (newfolder.children[j]) {
           newfolder.children[j].addEventListener("click", function (event) {

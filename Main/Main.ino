@@ -1,4 +1,6 @@
 
+
+
 #include <ESPAsyncWebServer.h>  //V3.6.0
 #include <WebSocketsServer.h>
 #include <SD.h>  //V1.3.0
@@ -150,6 +152,11 @@ void webSocketEvent(uint8_t clientId, WStype_t type, uint8_t *payload, size_t le
 }
 void sendJson(uint8_t clientId, String dirpath) {
   StaticJsonDocument<2048> jsonDoc;
+  JsonArray storage_status = jsonDoc.createNestedArray("storage_status");
+  JsonObject status = storage_status.createNestedObject();
+  status["occupied"] = SD.usedBytes();
+  status["free"] = SD.totalBytes();
+  status["total"] = SD.cardSize();
   buildJson(dirpath, jsonDoc);
   String jsonString;
   serializeJson(jsonDoc, jsonString);
@@ -197,8 +204,6 @@ void buildJson(const String &path, JsonDocument &jsonDoc) {
             fileInfo["extension"] = extension;
           }
         }
-        // Serial.print("Attempting to open file: ");
-        // Serial.println(file.path());
         fafile.close();
         if (!fafile.open(file.path(), O_READ)) {
           Serial.println("open file in buildejson funct failed");
@@ -380,7 +385,7 @@ void setup() {
     [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
       handleFileUpload(request, filename, index, data, len, final);
     });
-    
+
   // ==================================================HANDEL DOWNLOAD==========================================================
 
   server.on("/download", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -413,5 +418,9 @@ void setup() {
 }
 
 void loop() {
+  // if (!SD.cardPresent()) {  
+    // websockets.broadcastTXT("Storage_Disconnected");
+    // Serial.println("SD card disconnected!");
+  // }
   websockets.loop();
 }

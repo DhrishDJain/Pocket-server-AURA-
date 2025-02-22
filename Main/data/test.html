@@ -1,595 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>File Search Example</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
+      .storage-container {
+        background-color: #2d2d2d;
+        border-radius: 4px;
+        padding: 4px 8px  8px;
+        width: 210px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
       }
 
-      .searchbox {
-        position: relative;
+      .storage-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .storage-details {
+        display: flex;
+        width: 100%;
+        align-items: center;
+      }
+      .storage-icon {
+        margin-right: 8px;
+        display: flex;
+        align-items: center;
+      }
+
+      .storage-icon svg {
+        min-width: 1.5rem;
+      }
+
+      .storage-icon svg path {
+        fill: #ffffff;
+      }
+      .storage-status {
+        display: flex;
+        flex-direction: column;
+        row-gap: 4px;
         width: 100%;
       }
-      #mainsearchinput {
-        position: absolute;
-        right: 0;
-        width: 300px;
-        padding: 10px;
-        border: 1px solid #ccc;
+      .storage-text {
+        color: #a0a0a0;
+        font-size: 12px;
+      }
+
+      .storage-details {
+        color: #808080;
+        font-size: 11px;
+      }
+
+      .storeage-bar {
+        width: 100%;
+        height: 8px;
+        background-color: #404040;
         border-radius: 4px;
+        overflow: hidden;
       }
-      .suggestions {
-        position: absolute;
-        top: 3rem;
-        right: 0;
-        border: 1px solid #ccc;
+
+      .storeage-fill {
+        width: 70%; /* Adjust this value based on storage usage */
+        height: 100%;
+        background-color: #808080;
         border-radius: 4px;
-        max-height: 150px;
-        overflow-y: auto;
-        display: flex; /* Initially hidden */
-        flex-direction: column;
-        background: white;
-        z-index: 1000;
-      }
-      .suggestion-item {
-        padding: 10px;
-        cursor: pointer;
-      }
-      .suggestion-item:hover {
-        background-color: #f0f0f0;
-      }
-      .item-container {
-        margin-top: 20px;
-      }
-      .card {
-        padding: 10px;
-        border: 1px solid #ddd;
-        margin: 5px 0;
-      }
-      .hidden {
-        display: none;
       }
     </style>
   </head>
   <body>
-    <h1>File Search</h1>
-    <div class="searchbox">
-      <input
-        type="text"
-        id="mainsearchinput"
-        placeholder="Search for files..."
-      />
-      <div class="suggestions hidden" id="suggestions"></div>
+    <div class="storage-container">
+      <div class="storage-header">
+        <span class="storage-text">Storage Status</span>
+        <span class="storage-text">Storage connected</span>
+      </div>
+      <div class="storage-details">
+        <div class="storage-icon">
+          <svg viewBox="0 0 512 512" fill="#000000" stroke="#fff">
+            <g>
+              <path
+                style="fill: none"
+                d="M421.227,190.725v-46.916h15.598V95.342c-33.25-33.25-51.893-51.893-85.143-85.143H75.175v94.853 h20.697v85.673H75.175v311.076h124.729v-15.299h112.191v15.299h124.729V190.725H421.227z"
+              ></path>
+              <rect
+                x="132.59"
+                y="194.805"
+                style="fill: none"
+                stroke="#fff"
+                stroke-width="16px"
+                width="252.94"
+                height="252.94"
+              ></rect>
+              <path
+                style="fill: #fff"
+                d="M436.825,512H312.096c-5.633,0-10.199-4.567-10.199-10.199v-5.1h-91.793v5.1c0,5.632-4.566,10.199-10.199,10.199H75.175 c-5.633,0-10.199-4.567-10.199-10.199V190.725c0-5.632,4.566-10.199,10.199-10.199h10.498v-65.275H75.175 c-5.633,0-10.199-4.567-10.199-10.199V10.199C64.976,4.567,69.542,0,75.175,0h276.507c2.705,0,5.299,1.075,7.212,2.987 l85.143,85.142c1.912,1.913,2.987,4.507,2.987,7.212v48.468c0,5.632-4.566,10.199-10.199,10.199h-5.398v26.518h5.398 c5.633,0,10.199,4.567,10.199,10.199v311.076C447.024,507.433,442.458,512,436.825,512z M322.295,491.602h104.331V200.924h-5.398 c-5.633,0-10.199-4.567-10.199-10.199v-46.916c0-5.632,4.566-10.199,10.199-10.199h5.398V99.567l-79.168-79.168H85.374v74.454 h10.498c5.633,0,10.199,4.567,10.199,10.199v85.673c0,5.632-4.566,10.199-10.199,10.199H85.374v290.677h104.331v-5.1 c0-5.632,4.566-10.199,10.199-10.199h112.191c5.633,0,10.199,4.567,10.199,10.199V491.602z"
+              ></path>
+            </g>
+          </svg>
+        </div>
+        <div class="storage-status">
+          <div class="storage-details">210MB/88GD</div>
+          <div class="storeage-bar">
+            <div class="storeage-fill"></div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="item-container">
-      <div class="card"><span class="filename">dsds</span></div>
-      <div class="card"><span class="filename">hdsds</span></div>
-    </div>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const searchInput = document.getElementById("mainsearchinput");
-        const suggestionsContainer = document.getElementById("suggestions");
-        let suggestionselected = false;
-        let itemcontainer = document.querySelector(".item-container");
-        // Sample JSON data (you can fetch this from a server)
-        const fileOnServer = {
-          "/": [
-            { folder: "/test2" },
-            { folder: "/test4" },
-            {
-              filename: "qqq#gif#.zip",
-              size: 217416,
-              extension: "gif",
-              creation_date: "24-01-2025 12:26",
-              modified_date: "09-09-2024 21:45",
-            },
-            {
-              filename: "html#svg#.zip",
-              size: 298,
-              extension: "svg",
-              creation_date: "25-01-2025 13:57",
-              modified_date: "10-01-2025 20:20",
-            },
-            {
-              filename: "ppt#svg#.zip",
-              size: 9749,
-              extension: "svg",
-              creation_date: "01-01-1980 00:00",
-              modified_date: "01-01-1980 00:00",
-            },
-            {
-              filename: "circuit-svgrepo-com#svg#.zip",
-              size: 862,
-              extension: "svg",
-              creation_date: "26-01-2025 18:17",
-              modified_date: "30-07-2024 14:50",
-            },
-            { folder: "/test" },
-            {
-              filename: "DJs strike presentation 2024-25 (1)#pptx#.zip",
-              size: 7189897,
-              extension: "pptx",
-              creation_date: "27-01-2025 19:58",
-              modified_date: "19-07-2024 16:58",
-            },
-            {
-              filename: "imageres_8312#ico#.zip",
-              size: 7050,
-              extension: "ico",
-              creation_date: "01-02-2025 20:17",
-              modified_date: "29-12-2024 14:20",
-            },
-            {
-              filename: "a23e30a5-92fc-4294-bc55-d4e8341416fd-1#svg#.zip",
-              size: 1999,
-              extension: "svg",
-              creation_date: "30-01-2025 00:17",
-              modified_date: "29-12-2024 09:29",
-            },
-            {
-              filename: "544e4a52-2777-4fce-87f6-2acdb27ac569-1#svg#.zip",
-              size: 16798,
-              extension: "svg",
-              creation_date: "01-01-1980 00:02",
-              modified_date: "01-01-1980 00:02",
-            },
-          ],
-          "/test2/": [
-            { folder: "/test2/level11" },
-            { folder: "/test2/level1" },
-          ],
-          "/test2/level11/": [
-            { folder: "/test2/level11/level2" },
-            {
-              filename: "css#svg#.zip",
-              size: 309,
-              extension: "svg",
-              creation_date: "01-02-2025 20:09",
-              modified_date: "10-01-2025 20:20",
-            },
-            {
-              filename: "html#svg#.zip",
-              size: 298,
-              extension: "svg",
-              creation_date: "01-02-2025 20:09",
-              modified_date: "10-01-2025 20:20",
-            },
-            {
-              filename: "level1kifile(1)#svg#.zip",
-              size: 9773,
-              extension: "svg",
-              creation_date: "01-02-2025 20:09",
-              modified_date: "29-12-2024 09:29",
-            },
-            {
-              filename: "level1kifile#svg#.zip",
-              size: 1947,
-              extension: "svg",
-              creation_date: "01-02-2025 20:09",
-              modified_date: "29-12-2024 09:29",
-            },
-            {
-              filename: "video#svg#.zip",
-              size: 257,
-              extension: "svg",
-              creation_date: "01-02-2025 20:09",
-              modified_date: "10-01-2025 20:16",
-            },
-          ],
-          "/test2/level11/level2/": [
-            {
-              filename: "level2kifile#svg#.zip",
-              size: 10494,
-              extension: "svg",
-              creation_date: "01-02-2025 20:09",
-              modified_date: "29-12-2024 15:34",
-            },
-          ],
-          "/test2/level1/": [
-            {
-              filename: "imageres_1_8312#ico#.zip",
-              size: 7054,
-              extension: "ico",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "02-01-2025 14:18",
-            },
-            {
-              filename: "imageres_8312#ico#.zip",
-              size: 7050,
-              extension: "ico",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "29-12-2024 14:20",
-            },
-            {
-              filename: "imageres_8320#ico#.zip",
-              size: 7561,
-              extension: "ico",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "29-12-2024 14:20",
-            },
-            {
-              filename: "javascript#svg#.zip",
-              size: 467,
-              extension: "svg",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "10-01-2025 20:15",
-            },
-            {
-              filename: "pptcom#svg#.zip",
-              size: 3250,
-              extension: "svg",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "02-01-2025 14:28",
-            },
-            {
-              filename: "shell32_16822#ico#.zip",
-              size: 2186,
-              extension: "ico",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "29-12-2024 14:51",
-            },
-            {
-              filename: "Sprint Planning - Frame 1 (2)_enhanced (3)#jpg#.zip",
-              size: 651827,
-              extension: "jpg",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "23-01-2025 21:18",
-            },
-            {
-              filename: "wmploc_606#ico#.zip",
-              size: 32367,
-              extension: "ico",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "29-12-2024 14:57",
-            },
-            {
-              filename: "zipfldr_101#ico#.zip",
-              size: 36112,
-              extension: "ico",
-              creation_date: "01-02-2025 20:10",
-              modified_date: "29-12-2024 14:19",
-            },
-          ],
-          "/test4/": [
-            {
-              filename: "Exp7#pdf#.zip",
-              size: 380497,
-              extension: "pdf",
-              creation_date: "19-01-2025 12:13",
-              modified_date: "23-10-2024 22:10",
-            },
-            { folder: "/test4/leve222" },
-            { folder: "/test4/l333" },
-            { folder: "/test4/989" },
-            { folder: "/test4/Screenshots" },
-          ],
-          "/test4/leve222/": [],
-          "/test4/l333/": [
-            {
-              filename: "17434523#png#.zip",
-              size: 2625,
-              extension: "png",
-              creation_date: "26-01-2025 15:09",
-              modified_date: "22-09-2024 18:16",
-            },
-            {
-              filename: "ICSdghyJlkxIZmCs4pDouu-4096x4096#webp#.zip",
-              size: 3333,
-              extension: "webp",
-              creation_date: "26-01-2025 15:09",
-              modified_date: "02-10-2024 17:37",
-            },
-            {
-              filename: "Accelerometer-Animation-Labels#png#.zip",
-              size: 2938,
-              extension: "png",
-              creation_date: "26-01-2025 15:09",
-              modified_date: "09-09-2024 20:10",
-            },
-            {
-              filename: "back-svgrepo-com#svg#.zip",
-              size: 412,
-              extension: "svg",
-              creation_date: "26-01-2025 18:20",
-              modified_date: "03-11-2024 16:32",
-            },
-            {
-              filename: "Sprint Planning - Frame 1 (2)_enhanced (3)#jpg#.zip",
-              size: 21348,
-              extension: "jpg",
-              creation_date: "26-01-2025 18:25",
-              modified_date: "23-01-2025 21:18",
-            },
-            {
-              filename: "Sprint Planning - Frame 1 (2)_enhanced (1)#jpg#.zip",
-              size: 4116,
-              extension: "jpg",
-              creation_date: "26-01-2025 18:25",
-              modified_date: "23-01-2025 13:44",
-            },
-            {
-              filename: "Exp7 (1)#pdf#.zip",
-              size: 1912781,
-              extension: "pdf",
-              creation_date: "26-01-2025 18:25",
-              modified_date: "23-01-2025 21:22",
-            },
-            {
-              filename: "finger#mp4#.zip",
-              size: 4490232,
-              extension: "mp4",
-              creation_date: "01-01-1980 00:01",
-              modified_date: "01-01-1980 00:01",
-            },
-          ],
-          "/test4/989/": [
-            {
-              filename: "solofflex#mp4#.zip",
-              size: 6707881,
-              extension: "mp4",
-              creation_date: "26-01-2025 18:57",
-              modified_date: "25-10-2024 23:02",
-            },
-            {
-              filename: "battle-robot-black-and-white-2R9J912#svg#.zip",
-              size: 370195,
-              extension: "svg",
-              creation_date: "26-01-2025 18:57",
-              modified_date: "20-10-2024 13:19",
-            },
-            {
-              filename: "ppt#svg#.zip",
-              size: 9749,
-              extension: "svg",
-              creation_date: "30-01-2025 23:24",
-              modified_date: "29-12-2024 09:29",
-            },
-            { folder: "/test4/989/level11" },
-          ],
-          "/test4/989/level11/": [
-            { folder: "/test4/989/level11/level2" },
-            {
-              filename: "level1kifile(1)#svg#.zip",
-              size: 9773,
-              extension: "svg",
-              creation_date: "31-01-2025 00:02",
-              modified_date: "29-12-2024 09:29",
-            },
-            {
-              filename: "level1kifile#svg#.zip",
-              size: 1947,
-              extension: "svg",
-              creation_date: "01-01-1980 00:00",
-              modified_date: "29-12-2024 09:29",
-            },
-          ],
-          "/test4/989/level11/level2/": [
-            {
-              filename: "level2kifile#svg#.zip",
-              size: 10494,
-              extension: "svg",
-              creation_date: "01-01-1980 00:00",
-              modified_date: "29-12-2024 15:34",
-            },
-          ],
-          "/test4/Screenshots/": [
-            {
-              filename: "aaa1111#png#.zip",
-              size: 3247,
-              extension: "png",
-              creation_date: "01-01-1980 00:08",
-              modified_date: "28-12-2024 22:20",
-            },
-            {
-              filename: "asap#png#.zip",
-              size: 28754,
-              extension: "png",
-              creation_date: "01-02-2025 13:30",
-              modified_date: "13-11-2024 15:00",
-            },
-            {
-              filename: "asap1#png#.zip",
-              size: 141063,
-              extension: "png",
-              creation_date: "01-02-2025 13:30",
-              modified_date: "04-10-2024 19:33",
-            },
-            {
-              filename: "asap2#png#.zip",
-              size: 27311,
-              extension: "png",
-              creation_date: "01-02-2025 13:30",
-              modified_date: "28-09-2024 09:59",
-            },
-            {
-              filename: "asap3#png#.zip",
-              size: 61242,
-              extension: "png",
-              creation_date: "01-02-2025 13:30",
-              modified_date: "07-11-2024 18:40",
-            },
-          ],
-          "/test/": [
-            {
-              filename: "Exp7#pdf#.zip",
-              size: 380497,
-              extension: "pdf",
-              creation_date: "27-01-2025 19:37",
-              modified_date: "23-10-2024 22:10",
-            },
-            { folder: "/test/insider" },
-            {
-              filename: "7b8918207722071#png#.zip",
-              size: 348657,
-              extension: "png",
-              creation_date: "27-01-2025 19:38",
-              modified_date: "03-11-2024 14:43",
-            },
-            {
-              filename: "Sprint Planning - Frame 1 (1)#png#.zip",
-              size: 221151,
-              extension: "png",
-              creation_date: "01-01-1980 00:03",
-              modified_date: "17-11-2024 12:43",
-            },
-          ],
-          "/test/insider/": [
-            {
-              filename: "t132#pdf#.zip",
-              size: 21046,
-              extension: "pdf",
-              creation_date: "14-01-2025 21:59",
-              modified_date: "26-10-2024 00:12",
-            },
-            {
-              filename: "wmploc_606#ico#.zip",
-              size: 32367,
-              extension: "ico",
-              creation_date: "01-01-1980 00:01",
-              modified_date: "01-01-1980 00:01",
-            },
-            {
-              filename: "level1kifile#svg#.zip",
-              size: 1947,
-              extension: "svg",
-              creation_date: "01-02-2025 12:19",
-              modified_date: "29-12-2024 09:29",
-            },
-            {
-              filename: "sdd#svg#.zip",
-              size: 309,
-              extension: "svg",
-              creation_date: "14-01-2025 18:39",
-              modified_date: "10-01-2025 20:20",
-            },
-            {
-              filename: "exp99#pdf#.zip",
-              size: 380497,
-              extension: "pdf",
-              creation_date: "23-01-2025 21:22",
-              modified_date: "23-10-2024 22:10",
-            },
-            {
-              filename: "Exp7 (1)#pdf#.zip",
-              size: 380505,
-              extension: "pdf",
-              creation_date: "24-01-2025 12:39",
-              modified_date: "23-01-2025 21:22",
-            },
-            {
-              filename: "jjj (1)#svg#.zip",
-              size: 83746,
-              extension: "svg",
-              creation_date: "24-01-2025 12:40",
-              modified_date: "23-01-2025 21:20",
-            },
-          ],
-        };
-        // Function to flatten the JSON structure and extract filenames
-        function extractFilenames(data) {
-          const filenames = [];
-
-          function traverse(obj) {
-            for (const key in obj) {
-              if (Array.isArray(obj[key])) {
-                obj[key].forEach((item) => {
-                  if (item.filename) {
-                    filenames.push(key + item.filename);
-                  } else if (item.folder) {
-                    // Recursively traverse folders
-                    traverse(data[item.folder] || {});
-                  }
-                });
-              }
-            }
-          }
-
-          traverse(data);
-          return filenames;
-        }
-
-        // Extract filenames from the JSON data
-        const items = extractFilenames(fileOnServer);
-        const searcheditemcard = document.querySelector(".card");
-        searchInput.addEventListener("input", function () {
-          const query = this.value.toLowerCase();
-          suggestionsContainer.innerHTML = "";
-          document.querySelector(".suggestions").classList.remove("hidden");
-
-          if (query) {
-            const filteredSuggestions = items.filter((item) =>
-              item.toLowerCase().includes(query)
-            );
-            while (
-              document.querySelector(".item-container").children.length > 1
-            ) {
-              document
-                .querySelector(".item-container")
-                .removeChild(
-                  document.querySelector(".item-container").lastChild
-                );
-            }
-            console.log("\n");
-            filteredSuggestions.forEach((suggestion) => {
-              const suggestionItem = document.createElement("span");
-              let newsearcheditemcard = searcheditemcard.cloneNode(true);
-              newsearcheditemcard.classList.remove("hidden");
-              let name = suggestion.replace(/.*\//, "");
-              suggestionItem.classList.add("suggestion-item");
-              suggestionItem.textContent = suggestion.replace(/.*\//, "");
-              suggestionItem.addEventListener("click", function () {
-                searchInput.value = name;
-                suggestionsContainer.classList.add("hidden");
-                suggestionselected = true;
-                Array.from(
-                  document.querySelector(".item-container").children
-                ).forEach((item) => {
-                  if (item.querySelector(".filename").textContent !== name) {
-                    item.classList.add("hidden");
-                  }
-                  console.log(
-                    newsearcheditemcard.querySelector(".filename").textContent
-                  );
-                });
-              });
-              suggestionsContainer.appendChild(suggestionItem);
-              newsearcheditemcard.querySelector(".filename").textContent = name;
-              itemcontainer.appendChild(newsearcheditemcard);
-            });
-          } else {
-            Array.from(document.querySelector(".item-container").children)
-              .slice(2)
-              .forEach((item) => {
-                item.classList.remove("hidden"); // Remove hidden class
-              });
-            suggestionsContainer.classList.add("hidden");
-          }
-        });
-
-        document.addEventListener("click", (event) => {
-          if (
-            !suggestionsContainer.contains(event.target) &&
-            !event.target.classList.contains("suggestion-item") &&
-            !suggestionselected
-          ) {
-            document.querySelector(".suggestions").classList.add("hidden");
-            suggestionsContainer.innerHTML = "";
-            searchInput.value = "";
-            // Show all items again if no search is active
-            Array.from(
-              document.querySelector(".item-container").children
-            ).forEach((item) => {
-              item.classList.remove("hidden");
-            });
-          }
-        });
-      });
-    </script>
   </body>
 </html>
